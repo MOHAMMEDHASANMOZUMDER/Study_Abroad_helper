@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Technical University of Munich",
+    "country": "Germany",
+    "alpha_two_code": "DE",
+    "state_province": "Bavaria",
+    "domains": ["tum.de"],
+    "web_pages": ["https://www.tum.de/"]
+  },
+  {
+    "name": "University of Toronto",
+    "country": "Canada",
+    "alpha_two_code": "CA",
+    "state_province": "Ontario",
+    "domains": ["utoronto.ca", "toronto.edu"],
+    "web_pages": ["https://www.utoronto.ca/"]
+  },
+  {
+    "name": "University of Michigan - Ann Arbor",
+    "country": "United States",
+    "alpha_two_code": "US",
+    "state_province": null,
+    "domains": ["umich.edu"],
+    "web_pages": ["https://www.umich.edu/"]
+  }
+]

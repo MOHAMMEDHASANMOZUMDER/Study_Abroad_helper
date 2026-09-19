@@ -1,0 +1,331 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand: #df5b48;
+  --color-ink: #243047;
+}
+
+@layer base {
+  :root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #243047; background: #fffdf9; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; min-width: 320px; min-height: 100vh; }
+  button, input, select { font: inherit; }
+  button { cursor: pointer; }
+  h1, h2, h3, h4, p { margin-top: 0; }
+  #root { min-height: 100vh; }
+}
+
+@layer components {
+  .app-shell { @apply min-h-screen bg-stone-50 text-slate-800 transition-colors dark:bg-slate-950 dark:text-slate-100; }
+  .topbar { @apply sticky top-0 z-20 flex w-full items-center justify-between gap-[50px] border-b border-stone-200 bg-white/90 px-6 py-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/90 sm:px-8 lg:px-12; }
+  .legacy-dashboard-header { display: none; }
+  .brand-wrap { @apply flex items-center gap-3; }
+  .brand-mark { @apply grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-orange-500 to-rose-400 text-xl font-extrabold text-white; }
+  .brand-wrap h2 { @apply mb-0 text-base font-bold text-slate-900 dark:text-white; }
+  .eyebrow { @apply m-0 text-[0.7rem] font-bold uppercase tracking-[0.12em] text-rose-600 dark:text-orange-300; }
+  .nav { @apply hidden items-center gap-[25px] lg:flex; }
+  .nav a { @apply relative whitespace-nowrap font-medium text-slate-600 no-underline transition hover:text-rose-600 dark:text-slate-300 dark:hover:text-orange-300; }
+  .nav a::after { content: ''; @apply absolute -bottom-2 left-0 h-0.5 w-0 bg-rose-500 transition-all duration-300; }
+  .nav a:hover::after { @apply w-full; }
+  .topbar-actions { @apply ml-auto flex items-center gap-2; }
+  .theme-toggle { @apply rounded-full border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600 transition hover:border-rose-300 hover:text-rose-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200; }
+  .primary-btn { @apply rounded-xl bg-rose-600 px-4 py-3 font-bold text-white shadow-lg shadow-rose-600/20 transition hover:-translate-y-0.5 hover:bg-rose-700; }
+  .secondary-btn { @apply rounded-xl border border-slate-200 bg-white px-5 py-3 font-bold text-slate-700 transition hover:-translate-y-0.5 hover:border-rose-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100; }
+  .primary-btn.small, .secondary-btn.small, .ghost-btn { @apply px-3 py-2 text-xs; }
+  .primary-btn.large { @apply rounded-full bg-blue-600 px-10 py-4 text-base shadow-lg shadow-blue-900/30 hover:bg-blue-700; }
+  .nav-cta { @apply hidden lg:inline-flex; }
+  .menu-toggle { @apply grid h-10 w-10 place-content-center gap-1.5 rounded-xl border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-800 lg:hidden; }
+  .menu-toggle span { @apply block h-0.5 w-5 rounded-full bg-slate-700 transition dark:bg-slate-200; }
+  .mobile-nav { @apply absolute left-0 right-0 top-full grid max-h-0 overflow-hidden border-b border-stone-200 bg-white px-6 opacity-0 shadow-xl transition-all duration-300 dark:border-slate-800 dark:bg-slate-900 lg:hidden; }
+  .mobile-nav-open { @apply max-h-96 gap-1 py-4 opacity-100; }
+  .mobile-nav a { @apply rounded-xl px-4 py-3 font-semibold text-slate-700 no-underline transition hover:bg-rose-50 hover:text-rose-600 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-orange-300; }
+  .mobile-nav .primary-btn { @apply mt-2 w-full; }
+  .ghost-btn { @apply rounded-xl border border-rose-200 bg-transparent font-bold text-rose-600 dark:border-rose-900 dark:text-orange-300; }
+  .hero-section { @apply relative mx-auto h-[651px] flex min-h-[26rem] w-full items-end overflow-hidden bg-slate-950 px-6 py-12 text-white sm:min-h-[30rem] sm:px-10 lg:px-16; background-image: linear-gradient(90deg, rgba(2, 8, 23, 0.88) 0%, rgba(2, 8, 23, 0.68) 30%, rgba(2, 8, 23, 0.16) 80%), var(--hero-image, none); background-size: cover; background-position: center; }
+  .hero-section {
+  --hero-image: url('./assets/gemini2.jpg');
+}
+  .hero-copy { @apply p-[100px] relative z-10 w-full max-w-3xl; }
+  .hero-breadcrumb { @apply mb-14 flex items-center gap-2 text-sm text-white/90 sm:mb-20; }
+  .hero-breadcrumb a { @apply text-white no-underline hover:underline; }
+  .hero-copy h1 { @apply mb-4 max-w-3xl text-4xl font-extrabold tracking-tight text-white sm:text-6xl; }
+  .hero-copy p { @apply max-w-2xl text-base leading-7 text-white/90 sm:text-lg; }
+  .badge { @apply inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-2 text-xs font-bold uppercase tracking-wider text-rose-600 dark:border-orange-900 dark:bg-orange-950/40 dark:text-orange-300; }
+  .cta-row { @apply mt-7 flex flex-wrap gap-3; }
+  .feature-pills, .pill-row, .tag-list, .benefit-list { @apply flex flex-wrap gap-2; }
+  .feature-pills { @apply mt-6; }
+  .feature-pills span, .filter-pill, .tag-list span, .benefit-list span { @apply rounded-full bg-slate-100 px-3 py-1.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300; }
+  .hero-card { @apply p-6; }
+  .card-header, .profile-meta, .profile-row, .card-top-row, .application-main, .deadline-row { @apply flex items-center justify-between gap-3; }
+  .card-header { @apply mb-4; }
+  .status-pill, .status-tag { @apply rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300; }
+  .profile-meta { @apply mb-4; }
+  .profile-row { @apply border-b border-stone-100 py-3 text-sm dark:border-slate-800; }
+  .profile-row span, .profile-meta label { @apply text-xs text-slate-500 dark:text-slate-400; }
+  .profile-row strong, .profile-meta strong { @apply text-sm text-slate-800 dark:text-white; }
+  .score-box { @apply mt-5 border-t border-stone-100 pt-4 dark:border-slate-800; }
+  .progress-bar, .review-meter { @apply h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800; }
+  .progress-bar > span, .review-meter > span { @apply block h-full rounded-full bg-gradient-to-r from-rose-500 to-amber-400; }
+  .stats-grid { @apply mx-auto mt-7 grid w-[min(1200px,calc(100%-2rem))] gap-4 sm:grid-cols-2 lg:grid-cols-4; }
+  .stats-grid article { @apply rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900; }
+  .stats-grid strong { @apply block text-3xl font-extrabold text-slate-900 dark:text-white; }
+  .stats-grid span { @apply text-sm text-slate-500 dark:text-slate-400; }
+  .content-section, .destination-section, .admin-panel { @apply mx-auto mt-12 w-[min(1200px,calc(100%-2rem))]; }
+  .section-head { @apply mb-5 flex flex-wrap items-end justify-between gap-4; }
+  .section-head h3 { @apply m-0 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white; }
+  .pill-row { @apply mb-5; }
+  .filter-pill { @apply border border-stone-200 bg-white dark:border-slate-700 dark:bg-slate-900; }
+  .filter-pill.active { @apply border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300; }
+  .cards-grid { @apply grid gap-4 md:grid-cols-2 xl:grid-cols-3; }
+  .info-card { @apply rounded-2xl p-5 shadow-sm; }
+  .country-tag { @apply mb-1 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-orange-300; }
+  .card-top-row { @apply items-start; }
+  .card-top-row h4, .application-main h4 { @apply m-0 text-lg font-bold text-slate-900 dark:text-white; }
+  .match-badge { @apply rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300; }
+  .program-name, .funding-label { @apply my-4 text-sm text-slate-600 dark:text-slate-300; }
+  .mini-list { @apply m-0 list-disc space-y-1 pl-5 text-sm text-slate-500 dark:text-slate-400; }
+  .tag-list, .benefit-list { @apply mt-4; }
+  .card-actions { @apply mt-5 flex flex-wrap items-center justify-between gap-3; }
+  .professor-toolbar { @apply mb-5 flex flex-col gap-3 rounded-2xl border border-stone-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-end; }
+  .search-field, .select-field { @apply grid flex-1 gap-2 text-xs font-bold text-slate-500 dark:text-slate-400; }
+  .search-field input, .select-field select { @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-800 outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:ring-rose-950; }
+  .select-field { @apply sm:w-48 sm:flex-none; }
+  .profile-label { @apply mb-2 mt-4 text-[0.7rem] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400; }
+  .student-types { @apply m-0 min-h-6 text-sm text-slate-600 dark:text-slate-300; }
+  .unavailable-link, .result-count { @apply text-xs text-slate-400; }
+  .two-col-layout, .ai-layout { @apply mx-auto mt-12 grid w-[min(1200px,calc(100%-2rem))] gap-6 lg:grid-cols-[1.15fr_0.85fr]; }
+  .application-list { @apply grid gap-4; }
+  .application-item { @apply rounded-2xl p-5 shadow-sm; }
+  .application-main { @apply mb-3 items-start; }
+  .application-main p { @apply mt-1 text-sm text-slate-500 dark:text-slate-400; }
+  .progress-row { @apply mb-3 grid grid-cols-[1fr_auto] items-center gap-3; }
+  .deadline-row { @apply text-sm text-slate-500 dark:text-slate-400; }
+  .checklist-box, .chat-box, .review-panel { @apply rounded-2xl p-5 shadow-sm; }
+  .checklist-box { @apply grid gap-3; }
+  .check-item { @apply flex items-center gap-3 text-slate-700 dark:text-slate-200; }
+  .chat-box { @apply grid gap-3; }
+  .chat-bubble.user { @apply rounded-2xl border border-rose-100 bg-rose-50 p-4 dark:border-rose-900 dark:bg-rose-950/30; }
+  .chat-bubble.assistant { @apply rounded-2xl border border-emerald-100 bg-emerald-50 p-4 dark:border-emerald-900 dark:bg-emerald-950/30; }
+  .chat-bubble p { @apply m-0 text-sm leading-6 text-slate-700 dark:text-slate-200; }
+  .review-panel { @apply grid gap-4; }
+  .review-row { @apply grid grid-cols-[90px_1fr_40px] items-center gap-3; }
+  .admin-grid { @apply mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4; }
+  .admin-stat { @apply rounded-2xl p-5 shadow-sm; }
+  .admin-stat span { @apply text-sm text-slate-500 dark:text-slate-400; }
+  .admin-stat strong { @apply mt-2 block text-3xl font-extrabold text-slate-900 dark:text-white; }
+  .admin-table { @apply overflow-hidden rounded-2xl; }
+  .table-row { @apply grid grid-cols-[1.7fr_1fr_0.8fr] gap-3 border-b border-stone-100 p-4 text-sm last:border-0 dark:border-slate-800; }
+  .table-header { @apply bg-slate-50 font-bold dark:bg-slate-800; }
+  .table-status { @apply inline-flex w-fit rounded-full px-3 py-1.5 text-xs; }
+  .table-status.ok { @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300; }
+  .table-status.warn { @apply bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300; }
+  .destination-grid { @apply grid gap-4 sm:grid-cols-2 lg:grid-cols-4; }
+  .destination-card { @apply relative flex min-h-60 items-end overflow-hidden rounded-2xl bg-cover bg-center bg-no-repeat text-white shadow-lg transition duration-300 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500; }
+  .destination-overlay { @apply relative z-10 w-full bg-gradient-to-t from-slate-950/95 via-slate-950/35 to-transparent p-5 pt-16; }
+  .destination-flag { @apply mb-5 inline-flex rounded bg-white/20 px-2 py-1 text-xs font-bold tracking-wider; }
+  .destination-link { @apply text-sm font-bold text-white; }
+  .destination-details { @apply max-h-0 translate-y-4 overflow-hidden opacity-0 transition-all duration-300; }
+  .destination-card:hover .destination-details, .destination-card:focus-visible .destination-details { @apply max-h-40 translate-y-0 opacity-100; }
+  .destination-card:hover .destination-overlay, .destination-card:focus-visible .destination-overlay { @apply pt-8; }
+  .destination-australia { @apply bg-gradient-to-br from-teal-500 to-sky-900; }
+  .destination-canada { @apply bg-gradient-to-br from-red-500 to-rose-950; }
+  .destination-ireland { @apply bg-gradient-to-br from-slate-400 to-teal-800; }
+  .destination-new-zealand { @apply bg-gradient-to-br from-sky-400 to-indigo-900; }
+  .destination-uk { @apply bg-gradient-to-br from-indigo-500 to-slate-900; }
+  .destination-usa { @apply bg-gradient-to-br from-amber-500 to-red-950; }
+  .destination-germany { @apply bg-gradient-to-br from-slate-500 to-slate-950; }
+  .text-link { @apply font-bold text-rose-600 no-underline hover:text-rose-700 dark:text-orange-300; }
+  .study-tools-section { @apply mt-16 grid gap-6 dark:bg-slate-900 px-4 py-16 sm:px-8 lg:grid-cols-2 lg:px-16; }
+  .study-tool-card { @apply mx-auto flex w-full max-w-[560px] flex-col rounded-3xl bg-[#fafaeb] p-8 shadow-lg shadow-slate-200/70 dark:bg-slate-600 dark:shadow-black/20 sm:p-10; }
+  .study-tool-icon { @apply mb-6 text-4xl leading-none; }
+  .study-tool-card h3 { @apply mb-4 text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-3xl; }
+  .study-tool-card p { @apply mb-8 min-h-[4.5rem] text-base leading-7 text-slate-600 dark:text-slate-300; }
+  .study-tool-button { @apply mt-auto inline-flex min-h-14 items-center justify-center rounded-full bg-blue-600 px-6 py-4 text-center text-base font-bold text-white no-underline transition hover:-translate-y-0.5 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600; }
+  .site-footer { @apply mt-20 bg-[#303030] px-6 py-12 text-white sm:px-10 lg:px-16; }
+  .footer-top, .footer-bottom { @apply mx-auto flex w-full max-w-[1200px] items-center justify-between gap-8; }
+  .footer-top { @apply border-b border-white/20 pb-10; }
+  .footer-brand { @apply flex items-center gap-3 no-underline text-white; }
+  .footer-brand img { @apply h-14 w-auto object-contain; }
+  .footer-brand .brand-mark { @apply h-12 w-12 rounded-xl bg-white text-xl text-[#303030]; }
+  .footer-brand strong { @apply block text-xl font-extrabold tracking-tight; }
+  .footer-brand small { @apply block text-xs text-white/65; }
+  .footer-office-link { @apply inline-flex items-center gap-2 rounded-full border border-white/60 px-5 py-3 text-sm font-bold text-white no-underline transition hover:border-white hover:bg-white hover:text-[#303030]; }
+  .footer-office-link span { @apply text-xl leading-none; }
+  .footer-links { @apply mx-auto grid w-full max-w-[1200px] grid-cols-2 gap-10 py-12 sm:grid-cols-4; }
+  .footer-links div { @apply grid content-start gap-3; }
+  .footer-links h4 { @apply mb-2 text-base font-extrabold; }
+  .footer-links a { @apply w-fit text-sm text-white/75 no-underline transition hover:text-white hover:underline; }
+  .footer-bottom { @apply border-t border-white/20 pt-8; }
+  .footer-bottom p { @apply mb-2 text-sm text-white/85; }
+  .footer-bottom .footer-note { @apply text-xs text-white/55; }
+  .footer-legal { @apply mt-5 flex flex-wrap items-center gap-3 text-xs; }
+  .footer-legal a { @apply text-white/75 underline underline-offset-2 hover:text-white; }
+  .footer-legal span { @apply text-white/40; }
+  .footer-socials { @apply flex items-center gap-4; }
+  .footer-socials a { @apply grid h-9 w-9 place-items-center rounded-full bg-white text-sm font-extrabold text-[#303030] no-underline transition hover:-translate-y-1 hover:bg-rose-200; }
+  .auth-page { @apply min-h-screen bg-stone-50 text-slate-800 transition-colors dark:bg-slate-950 dark:text-slate-100; }
+  .auth-header { @apply flex items-center justify-between border-b border-stone-200 bg-white/90 px-6 py-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/90 sm:px-10 lg:px-16; }
+  .auth-brand { @apply flex items-center gap-3 text-sm font-bold text-slate-900 no-underline dark:text-white; }
+  .auth-brand img { @apply h-11 w-auto object-contain; }
+  .auth-main { @apply grid min-h-[calc(100vh-5rem)] place-items-center bg-gradient-to-br from-rose-50 via-stone-50 to-blue-50 px-4 py-12 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950/30; }
+  .auth-card { @apply w-full max-w-md rounded-3xl border border-white/70 bg-white p-7 shadow-xl shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30 sm:p-10; }
+  .auth-heading { @apply mb-8; }
+  .auth-heading h1 { @apply mb-3 mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white; }
+  .auth-heading > p:last-child { @apply mb-0 text-sm leading-6 text-slate-500 dark:text-slate-400; }
+  .auth-form { @apply grid gap-2; }
+  .auth-form > label:not(.auth-checkbox) { @apply mt-3 text-sm font-bold text-slate-700 first:mt-0 dark:text-slate-200; }
+  .auth-form input[type="email"], .auth-form input[type="password"], .auth-form input[type="text"] { @apply rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:ring-blue-950; }
+  .password-field { @apply relative; }
+  .password-field input { @apply w-full pr-16; }
+  .password-toggle { @apply absolute right-3 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-xs font-bold text-blue-600 hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-slate-700; }
+  .auth-form-row { @apply mt-3 flex items-center justify-between gap-3 text-xs; }
+  .auth-form-row a, .auth-switch a { @apply font-bold text-blue-600 no-underline hover:underline dark:text-blue-300; }
+  .auth-checkbox { @apply flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300; }
+  .auth-checkbox input { @apply h-4 w-4 accent-blue-600; }
+  .auth-submit { @apply mt-5 rounded-xl bg-blue-600 px-4 py-3 font-bold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700; }
+  .auth-divider { @apply my-4 flex items-center gap-3 text-xs text-slate-400 before:h-px before:flex-1 before:bg-slate-200 after:h-px after:flex-1 after:bg-slate-200 dark:before:bg-slate-700 dark:after:bg-slate-700; }
+  .auth-divider span { @apply shrink-0; }
+  .google-submit { @apply rounded-xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-bold text-slate-700 no-underline transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700; }
+  .auth-switch { @apply mt-7 text-center text-sm text-slate-500 dark:text-slate-400; }
+  .university-page { @apply min-h-screen bg-stone-50 pb-20 dark:bg-slate-950; }
+  .university-hero { @apply mx-auto flex w-[min(1200px,calc(100%-2rem))] flex-col justify-between gap-8 py-16 sm:py-20 lg:flex-row lg:items-end; }
+  .university-hero h1 { @apply mb-4 mt-3 max-w-3xl text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-6xl; }
+  .university-hero p:not(.eyebrow) { @apply mb-0 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300; }
+  .university-hero-stat { @apply rounded-3xl border border-blue-100 bg-blue-50 px-8 py-6 dark:border-blue-900/50 dark:bg-blue-950/40; }
+  .university-hero-stat strong { @apply block text-4xl font-extrabold text-blue-600 dark:text-blue-300; }
+  .university-hero-stat span { @apply text-sm text-slate-600 dark:text-slate-300; }
+  .university-content { @apply mx-auto w-[min(1200px,calc(100%-2rem))]; }
+  .university-toolbar { @apply mb-12 grid gap-4 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-[1fr_220px] sm:p-6; }
+  .university-search, .university-filter { @apply grid gap-2 text-xs font-bold text-slate-500 dark:text-slate-400; }
+  .university-search input, .university-filter select { @apply rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-normal text-slate-800 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:ring-blue-950; }
+  .university-results-heading { @apply mb-6 flex flex-wrap items-end justify-between gap-4; }
+  .university-results-heading h2 { @apply mb-0 mt-2 text-2xl font-extrabold text-slate-900 dark:text-white; }
+  .university-results-heading > span { @apply text-xs text-slate-500 dark:text-slate-400; }
+  .university-results-grid { @apply grid gap-5 lg:grid-cols-2; }
+  .university-result-card { @apply rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900; }
+  .university-card-top { @apply mb-4 flex items-start justify-between gap-3; }
+  .university-result-card h2 { @apply mb-2 text-xl font-extrabold text-slate-900 dark:text-white; }
+  .university-program { @apply mb-6 text-base font-semibold text-blue-600 dark:text-blue-300; }
+  .university-meta { @apply mb-5 grid grid-cols-2 gap-4 border-y border-stone-100 py-4 dark:border-slate-800; }
+  .university-meta span { @apply block text-xs text-slate-500 dark:text-slate-400; }
+  .university-meta strong { @apply mt-1 block text-sm text-slate-800 dark:text-slate-100; }
+  .university-card-actions { @apply mt-7 flex flex-wrap justify-between gap-3; }
+  .university-pagination { @apply mt-8 flex items-center justify-center gap-4; }
+  .university-pagination span { @apply text-sm font-semibold text-slate-600 dark:text-slate-300; }
+  .university-pagination button:disabled { @apply cursor-not-allowed opacity-50; }
+  .university-empty { @apply rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-700 dark:bg-slate-900; }
+  .university-empty h2 { @apply mb-2 text-xl font-bold text-slate-900 dark:text-white; }
+  .university-empty p { @apply mb-0 text-sm text-slate-500 dark:text-slate-400; }
+  .scholarship-page { @apply min-h-screen bg-stone-50 pb-20 dark:bg-slate-950; }
+  .scholarship-hero { @apply mx-auto flex w-[min(1200px,calc(100%-2rem))] flex-col justify-between gap-8 py-16 sm:py-20 lg:flex-row lg:items-end; }
+  .scholarship-hero h1 { @apply mb-4 mt-3 max-w-3xl text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-6xl; }
+  .scholarship-hero p:not(.eyebrow) { @apply mb-0 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300; }
+  .scholarship-toolbar { @apply sm:grid-cols-[1fr_200px_200px]; }
+  .scholarship-results-grid { @apply grid gap-5 lg:grid-cols-2; }
+  .scholarship-card { @apply rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900; }
+  .scholarship-card h2 { @apply mb-2 text-xl font-extrabold text-slate-900 dark:text-white; }
+  .scholarship-provider { @apply mb-5 text-sm font-semibold text-blue-600 dark:text-blue-300; }
+  .scholarship-details { @apply mb-5 grid gap-3 border-y border-stone-100 py-4 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400 sm:grid-cols-3; }
+  .scholarship-details strong { @apply block text-sm text-slate-800 dark:text-slate-100; }
+  .scholarship-eligibility { @apply min-h-12 text-sm leading-6 text-slate-600 dark:text-slate-300; }
+  .scholarship-benefits { @apply mb-5 flex flex-wrap gap-2; }
+  .scholarship-benefits span { @apply rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950/50 dark:text-blue-200; }
+  .scholarship-disclaimer { @apply mx-auto mt-8 max-w-4xl text-center text-xs leading-5 text-slate-500 dark:text-slate-400; }
+  .professor-page { @apply min-h-screen bg-stone-50 pb-20 dark:bg-slate-950; }
+  .professor-hero { @apply mx-auto flex w-[min(1200px,calc(100%-2rem))] flex-col justify-between gap-8 py-16 sm:py-20 lg:flex-row lg:items-end; }
+  .professor-hero h1 { @apply mb-4 mt-3 max-w-3xl text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-6xl; }
+  .professor-hero p:not(.eyebrow) { @apply mb-0 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300; }
+  .professor-toolbar { @apply sm:grid-cols-[1fr_220px]; }
+  .professor-results-grid { @apply grid gap-5 lg:grid-cols-2; }
+  .professor-card { @apply rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900; }
+  .professor-card h2 { @apply mb-2 text-xl font-extrabold text-slate-900 dark:text-white; }
+  .professor-university { @apply mb-5 text-sm font-semibold text-blue-600 dark:text-blue-300; }
+  .professor-section { @apply mb-5 border-t border-stone-100 pt-4 dark:border-slate-800; }
+  .professor-section > span { @apply mb-2 block text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400; }
+  .professor-section > p { @apply mb-0 text-sm leading-6 text-slate-600 dark:text-slate-300; }
+  .professor-tags { @apply flex flex-wrap gap-2; }
+  .professor-tags span { @apply rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950/50 dark:text-blue-200; }
+  .professor-unavailable { @apply cursor-not-allowed opacity-60; }
+  .account-page { @apply min-h-screen bg-stone-50 pb-20 dark:bg-slate-950; }
+  .account-loading { @apply grid min-h-screen place-items-center bg-stone-50 text-sm font-semibold text-slate-500 dark:bg-slate-950 dark:text-slate-300; }
+  .account-hero { @apply mx-auto flex w-[min(1200px,calc(100%-2rem))] flex-col items-start justify-between gap-8 py-14 sm:py-20 lg:flex-row lg:items-end; }
+  .account-hero h1 { @apply mb-4 mt-3 max-w-3xl text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-6xl; }
+  .account-hero p:not(.eyebrow) { @apply mb-0 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300; }
+  .account-grid { @apply mx-auto grid w-[min(1200px,calc(100%-2rem))] gap-4 md:grid-cols-3; }
+  .account-card, .account-panel { @apply rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900; }
+  .account-card { @apply min-h-36; }
+  .account-card-accent { @apply border-rose-200 bg-rose-50 dark:border-rose-900/50 dark:bg-rose-950/30; }
+  .account-card-label { @apply mb-4 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400; }
+  .account-card strong { @apply block truncate text-2xl font-extrabold text-slate-900 dark:text-white; }
+  .account-card p { @apply mb-0 mt-2 text-sm text-slate-500 dark:text-slate-400; }
+  .account-panels { @apply mx-auto mt-6 grid w-[min(1200px,calc(100%-2rem))] gap-6 lg:grid-cols-[1.35fr_0.65fr]; }
+  .account-panel .section-head { @apply mb-4; }
+  .account-panel h2 { @apply mb-0 mt-2 text-2xl font-extrabold text-slate-900 dark:text-white; }
+  .dashboard-actions { @apply grid gap-2; }
+  .dashboard-action { @apply flex items-center gap-4 rounded-2xl border border-stone-100 p-4 no-underline transition hover:border-rose-200 hover:bg-rose-50/50 dark:border-slate-800 dark:hover:border-rose-900 dark:hover:bg-rose-950/20; }
+  .dashboard-action > span { @apply grid h-9 w-9 shrink-0 place-items-center rounded-full bg-slate-100 text-xs font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-300; }
+  .dashboard-action div { @apply min-w-0 flex-1; }
+  .dashboard-action strong { @apply text-sm font-bold text-slate-800 dark:text-white; }
+  .dashboard-action p { @apply mb-0 mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400; }
+  .dashboard-action b { @apply text-xl font-normal text-rose-500; }
+  .profile-summary { @apply flex flex-col items-start; }
+  .profile-avatar { @apply mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-rose-500 to-orange-400 text-2xl font-extrabold text-white shadow-lg shadow-rose-500/20; }
+  .profile-avatar-large { @apply mb-0 h-20 w-20 text-3xl; }
+  .profile-summary h2 { @apply mb-1; }
+  .profile-summary > p:not(.eyebrow):not(.profile-email) { @apply mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300; }
+  .profile-email, .profile-form-email { @apply text-sm text-slate-500 dark:text-slate-400; }
+  .profile-summary .tag-list { @apply mb-6 mt-3; }
+  .profile-form { @apply mx-auto w-[min(900px,calc(100%-2rem))]; }
+  .profile-form-heading { @apply mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-stone-100 pb-5 dark:border-slate-800; }
+  .profile-form-grid { @apply grid gap-5 md:grid-cols-2; }
+  .profile-form-grid label { @apply grid gap-2 text-xs font-bold text-slate-500 dark:text-slate-400; }
+  .profile-form-grid input, .profile-form-grid textarea { @apply rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-normal text-slate-800 outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:ring-rose-950; }
+  .profile-form-full { @apply md:col-span-2; }
+  .profile-form-actions { @apply mt-7 flex justify-end gap-3; }
+  .ai-tools-page { @apply min-h-screen bg-stone-50 pb-20 dark:bg-slate-950; }
+  .ai-tools-hero { @apply mx-auto flex w-[min(1200px,calc(100%-2rem))] flex-col justify-between gap-8 py-14 sm:py-20 lg:flex-row lg:items-end; }
+  .ai-tools-hero h1 { @apply mb-4 mt-3 max-w-3xl text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-6xl; }
+  .ai-tools-hero p:not(.eyebrow) { @apply mb-0 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300; }
+  .ai-tools-badge { @apply rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-200; }
+  .ai-tool-panels { @apply mx-auto grid w-[min(1200px,calc(100%-2rem))] gap-6 lg:grid-cols-2; }
+  .ai-tool-panel { @apply rounded-3xl border border-stone-200 bg-[#fafaeb] p-6 shadow-lg shadow-slate-200/70 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 sm:p-8; }
+  .ai-tool-panel-heading { @apply mb-4 flex items-start gap-4; }
+  .ai-tool-panel-heading .study-tool-icon { @apply mb-0; }
+  .ai-tool-panel h2 { @apply mb-0 mt-2 text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white; }
+  .ai-tool-panel > p { @apply min-h-14 text-sm leading-6 text-slate-600 dark:text-slate-300; }
+  .ai-form-grid { @apply grid gap-4 sm:grid-cols-2; }
+  .ai-form-grid label { @apply grid gap-2 text-xs font-bold text-slate-500 dark:text-slate-400; }
+  .ai-form-grid select { @apply rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-normal text-slate-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:ring-blue-950; }
+  .ai-form-full { @apply sm:col-span-2; }
+  .ai-tool-submit { @apply mt-6 w-full; }
+  .ai-recommendations { @apply mt-8 border-t border-stone-200 pt-6 dark:border-slate-700; }
+  .ai-recommendations h3 { @apply mb-3 text-lg font-extrabold text-slate-900 dark:text-white; }
+  .ai-recommendation { @apply mb-2 flex items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800; }
+  .ai-recommendation strong { @apply text-sm font-extrabold text-slate-900 dark:text-white; }
+  .ai-recommendation p { @apply mb-0 mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400; }
+  .ai-recommendation small { @apply mt-2 block text-xs leading-5 text-slate-600 dark:text-slate-300; }
+  .ai-recommendation > span { @apply whitespace-nowrap text-xs font-bold text-blue-600 dark:text-blue-300; }
+  .ai-cost-result { @apply mt-8 rounded-2xl border border-blue-200 bg-blue-50 p-5 dark:border-blue-900/60 dark:bg-blue-950/30; }
+  .ai-cost-result span { @apply block text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300; }
+  .ai-cost-result strong { @apply mt-2 block text-4xl font-extrabold text-slate-900 dark:text-white; }
+  .ai-cost-result p { @apply mb-0 mt-3 text-xs leading-5 text-slate-600 dark:text-slate-300; }
+  .ai-budget-breakdown { @apply mt-4 grid gap-2 text-xs text-slate-600 dark:text-slate-300 sm:grid-cols-2; }
+  .ai-chat-panel { @apply mx-auto mt-6 w-[min(1200px,calc(100%-2rem))] rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-8; }
+  .ai-chat-messages { @apply mb-5 grid max-h-96 gap-3 overflow-y-auto; }
+  .ai-chat-empty { @apply rounded-2xl bg-slate-50 p-5 text-sm text-slate-500 dark:bg-slate-800 dark:text-slate-400; }
+  .ai-chat-message { @apply max-w-[85%] rounded-2xl px-4 py-3; }
+  .ai-chat-message.user { @apply ml-auto bg-blue-600 text-white; }
+  .ai-chat-message.model { @apply bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100; }
+  .ai-chat-message span { @apply block text-[0.65rem] font-bold uppercase tracking-wider opacity-70; }
+  .ai-chat-message p { @apply mb-0 mt-1 whitespace-pre-wrap text-sm leading-6; }
+  .ai-chat-input { @apply flex gap-3; }
+  .ai-chat-input input { @apply min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:ring-blue-950; }
+}
+
+@media (max-width: 640px) {
+  .table-row { grid-template-columns: 1fr; }
+  .footer-top, .footer-bottom { @apply items-start; flex-direction: column; }
+  .footer-office-link { @apply w-full justify-center; }
+  .footer-socials { @apply mt-2; }
+}
