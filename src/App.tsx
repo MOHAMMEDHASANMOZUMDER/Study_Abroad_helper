@@ -428,15 +428,17 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   return user ? <>{children}</> : <Navigate to="/login" replace />
 }
 
+const apiBaseUrl = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')
+
 async function authRequest(path: string, options?: RequestInit) {
-  const response = await fetch(`/api${path}`, { ...options, credentials: 'include', headers: { 'Content-Type': 'application/json', ...options?.headers } })
+  const response = await fetch(`${apiBaseUrl}/api${path}`, { ...options, credentials: 'include', headers: { 'Content-Type': 'application/json', ...options?.headers } })
   const payload = response.status === 204 ? null : await response.json() as { message?: string; user?: User }
   if (!response.ok) throw new Error(payload?.message ?? 'Request failed')
   return payload
 }
 
 async function aiRequest<T>(path: string, body: unknown) {
-  const response = await fetch(`/api/ai${path}`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+  const response = await fetch(`${apiBaseUrl}/api/ai${path}`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
   const payload = await response.json() as T & { message?: string }
   if (!response.ok) throw new Error(payload.message ?? 'AI request failed')
   return payload
@@ -504,7 +506,7 @@ function LoginPage() {
         {error && <p className="auth-error">{error}</p>}
         <button type="submit" className="auth-submit" disabled={loading}>{loading ? 'Signing in...' : 'Log in'}</button>
         <div className="auth-divider"><span>or</span></div>
-        <a className="google-submit" href="/api/auth/google">Continue with Google</a>
+        <a className="google-submit" href={`${apiBaseUrl}/api/auth/google`}>Continue with Google</a>
         {googleError && <p className="auth-error">Google sign-in could not be completed. Please try again.</p>}
       </form>
       <p className="auth-switch">Don’t have an account? <Link to="/register">Create one</Link></p>

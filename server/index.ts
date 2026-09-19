@@ -20,12 +20,13 @@ const googleClientId = process.env.GOOGLE_CLIENT_ID
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET
 const googleRedirectUri = process.env.GOOGLE_REDIRECT_URI ?? `http://localhost:${port}/api/auth/google/callback`
 const isSecureEnvironment = process.env.NODE_ENV?.toLowerCase() === ['pro', 'duction'].join('')
+const clientOrigin = process.env.CLIENT_ORIGIN ?? 'http://localhost:5173'
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 5, ssl: { rejectUnauthorized: false } })
-const cookieOptions = { httpOnly: true, sameSite: 'lax' as const, secure: isSecureEnvironment, maxAge: 1000 * 60 * 60 * 24 * 7 }
-const googleStateCookieOptions = { httpOnly: true, sameSite: 'lax' as const, secure: isSecureEnvironment, maxAge: 10 * 60 * 1000 }
+const cookieOptions = { httpOnly: true, sameSite: isSecureEnvironment ? 'none' as const : 'lax' as const, secure: isSecureEnvironment, maxAge: 1000 * 60 * 60 * 24 * 7 }
+const googleStateCookieOptions = { httpOnly: true, sameSite: isSecureEnvironment ? 'none' as const : 'lax' as const, secure: isSecureEnvironment, maxAge: 10 * 60 * 1000 }
 
-app.use(cors({ origin: process.env.CLIENT_ORIGIN ?? 'http://localhost:5173', credentials: true }))
+app.use(cors({ origin: clientOrigin, credentials: true }))
 app.use(express.json({ limit: '20kb' }))
 app.use(cookieParser())
 
@@ -94,7 +95,7 @@ app.get('/api/auth/google/callback', async (request, response) => {
       user = created.rows[0]
     }
     response.cookie('session_token', createToken({ id: user.id, email: user.email }), cookieOptions)
-    return response.redirect('/')
+    return response.redirect(clientOrigin)
   } catch (oauthError) {
     console.error('Google OAuth error', oauthError)
     return response.redirect('/login?error=google')
