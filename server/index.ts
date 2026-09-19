@@ -209,7 +209,7 @@ app.patch('/api/profile', requireAuth, async (request: AuthenticatedRequest, res
 })
 
 app.use((error: Error, _request: Request, response: Response, _next: NextFunction) => {
-  console.error(error)
+  console.error('API request error', error.message, error.stack)
   response.status(500).json({ message: 'Unexpected server error' })
 })
 
@@ -220,8 +220,22 @@ export const initializeDatabase = async () => {
     path.join(path.dirname(new URL(import.meta.url).pathname), 'schema.sql'),
   ]
   const schemaPath = schemaPaths.find((candidate) => fs.existsSync(candidate))
-  if (!schemaPath) throw new Error(`Database schema file not found. Checked: ${schemaPaths.join(', ')}`)
-  const schema = fs.readFileSync(schemaPath, 'utf8')
+  const schema = schemaPath
+    ? fs.readFileSync(schemaPath, 'utf8')
+    : `CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE TABLE IF NOT EXISTS users (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  email text NOT NULL UNIQUE,
+  password_hash text,
+  bio text NOT NULL DEFAULT '',
+  target_degree text NOT NULL DEFAULT '',
+  target_countries text[] NOT NULL DEFAULT '{}',
+  interests text[] NOT NULL DEFAULT '{}',
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;`
   await pool.query(schema)
 }
 
@@ -244,7 +258,7 @@ const startServer = async () => {
 
 export default app
 
-if (process.env.NETLIFY !== 'true') {
+if (process.env.NETLIFY !== 'true' && process.env.VERCEL !== '1') {
   void startServer().catch((error) => {
     console.error('Unable to initialize the database or start the API server', error)
     process.exit(1)

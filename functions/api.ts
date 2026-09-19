@@ -11,7 +11,7 @@ const handler = async (...args: Parameters<typeof lambdaHandler>) => {
     return await lambdaHandler(...args)
   } catch (error) {
     databaseReady = undefined
-    console.error('Netlify API function failed', error)
+    console.error('Netlify API function failed', error instanceof Error ? error.message : error)
     return {
       statusCode: 502,
       headers: { 'Content-Type': 'application/json' },
