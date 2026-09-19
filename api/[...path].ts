@@ -7,6 +7,7 @@ export default async function handler(request: Request, response: Response) {
   try {
     databaseReady ??= initializeDatabase()
     await databaseReady
+    if (!request.url.startsWith('/api/')) request.url = `/api${request.url.startsWith('/') ? '' : '/'}${request.url}`
     return app(request, response)
   } catch (error) {
     databaseReady = undefined

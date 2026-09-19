@@ -432,14 +432,20 @@ const apiBaseUrl = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')
 
 async function authRequest(path: string, options?: RequestInit) {
   const response = await fetch(`${apiBaseUrl}/api${path}`, { ...options, credentials: 'include', headers: { 'Content-Type': 'application/json', ...options?.headers } })
-  const payload = response.status === 204 ? null : await response.json() as { message?: string; user?: User }
+  const rawPayload = response.status === 204 ? '' : await response.text()
+  let payload: { message?: string; user?: User } | null = null
+  if (rawPayload) {
+    try { payload = JSON.parse(rawPayload) as { message?: string; user?: User } } catch { throw new Error(`API returned an invalid response (${response.status})`) }
+  }
   if (!response.ok) throw new Error(payload?.message ?? 'Request failed')
   return payload
 }
 
 async function aiRequest<T>(path: string, body: unknown) {
   const response = await fetch(`${apiBaseUrl}/api/ai${path}`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
-  const payload = await response.json() as T & { message?: string }
+  const rawPayload = await response.text()
+  let payload: (T & { message?: string }) | null = null
+  try { payload = JSON.parse(rawPayload) as T & { message?: string } } catch { throw new Error(`API returned an invalid response (${response.status})`) }
   if (!response.ok) throw new Error(payload.message ?? 'AI request failed')
   return payload
 }
