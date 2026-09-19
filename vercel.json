@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/[...path].ts": {
-      "includeFiles": ["server/schema.sql"]
+      "includeFiles": "server/schema.sql"
     }
   }
 }
