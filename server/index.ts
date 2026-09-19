@@ -213,9 +213,13 @@ app.use((error: Error, _request: Request, response: Response, _next: NextFunctio
   response.status(500).json({ message: 'Unexpected server error' })
 })
 
-const startServer = async () => {
+export const initializeDatabase = async () => {
   const schema = fs.readFileSync(path.join(process.cwd(), 'server', 'schema.sql'), 'utf8')
   await pool.query(schema)
+}
+
+const startServer = async () => {
+  await initializeDatabase()
   const server = app.listen(port)
   server.on('listening', () => console.log(`API server listening on http://localhost:${port}`))
   server.on('error', (error) => {
@@ -231,7 +235,11 @@ const startServer = async () => {
   process.once('SIGTERM', () => void shutdown())
 }
 
-void startServer().catch((error) => {
-  console.error('Unable to initialize the database or start the API server', error)
-  process.exit(1)
-})
+export default app
+
+if (process.env.NETLIFY !== 'true') {
+  void startServer().catch((error) => {
+    console.error('Unable to initialize the database or start the API server', error)
+    process.exit(1)
+  })
+}
