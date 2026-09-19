@@ -5,9 +5,19 @@ let databaseReady: Promise<void> | undefined
 const lambdaHandler = serverless(app)
 
 const handler = async (...args: Parameters<typeof lambdaHandler>) => {
-  databaseReady ??= initializeDatabase()
-  await databaseReady
-  return lambdaHandler(...args)
+  try {
+    databaseReady ??= initializeDatabase()
+    await databaseReady
+    return await lambdaHandler(...args)
+  } catch (error) {
+    databaseReady = undefined
+    console.error('Netlify API function failed', error)
+    return {
+      statusCode: 502,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'The API could not initialize. Check Netlify function logs and environment variables.' }),
+    }
+  }
 }
 
 export { handler }

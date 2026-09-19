@@ -214,7 +214,14 @@ app.use((error: Error, _request: Request, response: Response, _next: NextFunctio
 })
 
 export const initializeDatabase = async () => {
-  const schema = fs.readFileSync(path.join(process.cwd(), 'server', 'schema.sql'), 'utf8')
+  const schemaPaths = [
+    path.join(process.cwd(), 'server', 'schema.sql'),
+    path.join(process.cwd(), 'schema.sql'),
+    path.join(path.dirname(new URL(import.meta.url).pathname), 'schema.sql'),
+  ]
+  const schemaPath = schemaPaths.find((candidate) => fs.existsSync(candidate))
+  if (!schemaPath) throw new Error(`Database schema file not found. Checked: ${schemaPaths.join(', ')}`)
+  const schema = fs.readFileSync(schemaPath, 'utf8')
   await pool.query(schema)
 }
 
