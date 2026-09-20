@@ -34,6 +34,8 @@
   .secondary-btn { @apply rounded-xl border border-slate-200 bg-white px-5 py-3 font-bold text-slate-700 transition hover:-translate-y-0.5 hover:border-rose-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100; }
   .primary-btn.small, .secondary-btn.small, .ghost-btn { @apply px-3 py-2 text-xs; }
   .primary-btn.large { @apply rounded-full bg-blue-600 px-10 py-4 text-base shadow-lg shadow-blue-900/30 hover:bg-blue-700; }
+  .primary-btn:disabled { @apply cursor-wait opacity-75; }
+  .primary-btn .loading-spinner { @apply mr-2 inline-block align-middle; }
   .nav-cta { @apply hidden lg:inline-flex; }
   .menu-toggle { @apply grid h-10 w-10 place-content-center gap-1.5 rounded-xl border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-800 lg:hidden; }
   .menu-toggle span { @apply block h-0.5 w-5 rounded-full bg-slate-700 transition dark:bg-slate-200; }
@@ -45,6 +47,15 @@
   .hero-section { @apply relative mx-auto h-[651px] flex min-h-[26rem] w-full items-end overflow-hidden bg-slate-950 px-6 py-12 text-white sm:min-h-[30rem] sm:px-10 lg:px-16; background-image: linear-gradient(90deg, rgba(2, 8, 23, 0.88) 0%, rgba(2, 8, 23, 0.68) 30%, rgba(2, 8, 23, 0.16) 80%), var(--hero-image, none); background-size: cover; background-position: center; }
   .hero-section {
   --hero-image: url('./assets/gemini2.jpg');
+}
+
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spinner {
+  to { transform: rotate(360deg); }
 }
   .hero-copy { @apply p-[100px] relative z-10 w-full max-w-3xl; }
   .hero-breadcrumb { @apply mb-14 flex items-center gap-2 text-sm text-white/90 sm:mb-20; }
@@ -128,6 +139,15 @@
   .destination-details { @apply max-h-0 translate-y-4 overflow-hidden opacity-0 transition-all duration-300; }
   .destination-card:hover .destination-details, .destination-card:focus-visible .destination-details { @apply max-h-40 translate-y-0 opacity-100; }
   .destination-card:hover .destination-overlay, .destination-card:focus-visible .destination-overlay { @apply pt-8; }
+  .page-transition { animation: page-enter 320ms ease-out both; }
+  .loading-screen { @apply flex min-h-screen flex-col items-center justify-center gap-4 bg-stone-50 text-slate-600 dark:bg-slate-950 dark:text-slate-300; }
+  .loading-screen p { @apply m-0 text-sm font-semibold; }
+  .loading-spinner { display: inline-block; width: 1.1rem; height: 1.1rem; border: 2px solid currentColor; border-right-color: transparent; border-radius: 9999px; animation: spinner 700ms linear infinite; }
+  .university-loading { @apply flex min-h-80 flex-col items-center justify-center gap-3 text-center; }
+  .university-loading h2, .university-loading p { @apply m-0; }
+  .university-loading p { @apply text-sm text-slate-500 dark:text-slate-400; }
+  .loading-skeleton-grid { @apply mt-5 grid w-full gap-4 md:grid-cols-2 xl:grid-cols-3; }
+  .loading-skeleton { @apply block h-48 animate-pulse rounded-2xl bg-slate-200 dark:bg-slate-800; }
   .destination-australia { @apply bg-gradient-to-br from-teal-500 to-sky-900; }
   .destination-canada { @apply bg-gradient-to-br from-red-500 to-rose-950; }
   .destination-ireland { @apply bg-gradient-to-br from-slate-400 to-teal-800; }

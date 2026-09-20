@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { BrowserRouter, Link, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast'
 import './App.css'
 import img from "./assets/logo.png"
@@ -424,8 +424,33 @@ function AppTopbar() {
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, authReady } = useAuth()
-  if (!authReady) return <div className="account-loading">Loading your account...</div>
+  if (!authReady) return <LoadingScreen label="Loading your account..." />
   return user ? <>{children}</> : <Navigate to="/login" replace />
+}
+
+function LoadingSpinner({ label = 'Loading' }: { label?: string }) {
+  return <span className="loading-spinner" role="status" aria-label={label} />
+}
+
+function LoadingScreen({ label }: { label: string }) {
+  return <div className="loading-screen"><LoadingSpinner label={label} /><p>{label}</p></div>
+}
+
+function PageTransition() {
+  const location = useLocation()
+  return <div key={`${location.pathname}${location.search}`} className="page-transition"><Routes>
+    <Route path="/" element={<Dashboard />} />
+    <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+    <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+    <Route path="/universities" element={<UniversitiesPage />} />
+    <Route path="/scholarships" element={<ScholarshipsPage />} />
+    <Route path="/professors" element={<ProfessorsPage />} />
+    <Route path="/tracker" element={<Dashboard />} />
+    <Route path="/ai" element={<ProtectedRoute><AIToolsPage /></ProtectedRoute>} />
+    <Route path="/login" element={<LoginPage />} />
+    <Route path="/register" element={<RegisterPage />} />
+    <Route path="*" element={<Dashboard />} />
+  </Routes></div>
 }
 
 const apiBaseUrl = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')
@@ -853,7 +878,11 @@ function UniversitiesPage() {
           </div>
 
           {loading ? (
-            <div className="university-empty"><h2>Loading universities...</h2><p>Fetching the latest institutions from Worqnow.</p></div>
+            <div className="university-loading" aria-live="polite">
+              <LoadingSpinner label="Loading universities" />
+              <h2>Loading universities...</h2><p>Fetching the latest institutions from Worqnow.</p>
+              <div className="loading-skeleton-grid">{Array.from({ length: 6 }, (_, index) => <span key={index} className="loading-skeleton" />)}</div>
+            </div>
           ) : filteredUniversities.length > 0 ? (
             <>
             <div className="university-results-grid">
@@ -1106,7 +1135,7 @@ function AIToolsPage() {
         </section>
 
         <section className="ai-tool-panels">
-          <article className="ai-tool-panel">
+          <article id="recommendations" className="ai-tool-panel">
             <div className="ai-tool-panel-heading"><span className="study-tool-icon">🎓</span><div><p className="eyebrow">Destination guide</p><h2>Can’t decide where to study?</h2></div></div>
             <p>Tell us what matters most and get a short list of destinations to research next.</p>
             <div className="ai-form-grid">
@@ -1114,25 +1143,25 @@ function AIToolsPage() {
               <label><span>Budget comfort</span><select value={budget} onChange={(event) => setBudget(event.target.value)}><option value="low">Value focused</option><option value="medium">Balanced</option><option value="high">Flexible</option></select></label>
               <label className="ai-form-full"><span>Main goal</span><select value={goal} onChange={(event) => setGoal(event.target.value)}><option value="research">Research and academic depth</option><option value="career">Career and industry opportunities</option></select></label>
             </div>
-            <button type="button" className="primary-btn ai-tool-submit" onClick={calculateRecommendations} disabled={aiLoading}>{aiLoading ? 'Asking Gemini...' : 'Generate recommendations'}</button>
+            <button type="button" className="primary-btn ai-tool-submit" onClick={calculateRecommendations} disabled={aiLoading}>{aiLoading && <LoadingSpinner label="Generating recommendations" />}{aiLoading ? 'Asking Gemini...' : 'Generate recommendations'}</button>
             {recommendations.length > 0 && <div className="ai-recommendations"><h3>Your recommended destinations</h3>{recommendations.map((recommendation) => <div className="ai-recommendation" key={recommendation.country}><div><strong>{recommendation.country}</strong><p>{recommendation.summary}</p><small>{recommendation.why}</small></div><span>Explore →</span></div>)}</div>}
           </article>
 
-          <article className="ai-tool-panel">
+          <article id="budget" className="ai-tool-panel">
             <div className="ai-tool-panel-heading"><span className="study-tool-icon">▣</span><div><p className="eyebrow">Budget planner</p><h2>Cost of living calculator</h2></div></div>
             <p>Estimate a monthly student budget before you shortlist universities and cities.</p>
             <div className="ai-form-grid">
               <label><span>Destination</span><select value={country} onChange={(event) => { setCountry(event.target.value); setCalculatorReady(false) }}>{AI_DESTINATION_PROFILES.map((profile) => <option key={profile.country}>{profile.country}</option>)}</select></label>
               <label><span>Accommodation</span><select value={accommodation} onChange={(event) => { setAccommodation(event.target.value); setCalculatorReady(false) }}><option value="shared">Shared housing</option><option value="campus">University housing</option><option value="private">Private studio</option></select></label>
             </div>
-            <button type="button" className="primary-btn ai-tool-submit" onClick={calculateCost} disabled={aiLoading}>{aiLoading ? 'Calculating with Gemini...' : 'Calculate monthly budget'}</button>
+            <button type="button" className="primary-btn ai-tool-submit" onClick={calculateCost} disabled={aiLoading}>{aiLoading && <LoadingSpinner label="Calculating budget" />}{aiLoading ? 'Calculating with Gemini...' : 'Calculate monthly budget'}</button>
             {calculatorReady && budgetDetails && <div className="ai-cost-result"><span>Estimated monthly budget</span><strong>{budgetDetails.currency} {monthlyBudget.toLocaleString()}</strong><p>{budgetDetails.notes}</p><div className="ai-budget-breakdown">{Object.entries(budgetDetails.breakdown).map(([item, value]) => <span key={item}>{item}: {budgetDetails.currency} {value.toLocaleString()}</span>)}</div></div>}
           </article>
         </section>
         <section className="ai-chat-panel">
           <div className="ai-tool-panel-heading"><span className="study-tool-icon">✦</span><div><p className="eyebrow">Study assistant</p><h2>Ask the AI advisor</h2></div></div>
           <div className="ai-chat-messages">{chatMessages.length === 0 ? <p className="ai-chat-empty">Ask about applications, scholarships, supervisors, visas, or studying abroad.</p> : chatMessages.map((message, index) => <div className={`ai-chat-message ${message.role}`} key={`${message.role}-${index}`}><span>{message.role === 'user' ? 'You' : 'Gemini'}</span><p>{message.text}</p></div>)}</div>
-          <div className="ai-chat-input"><input value={chatInput} onChange={(event) => setChatInput(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') sendChatMessage() }} placeholder="Ask a study-abroad question..." /><button type="button" className="primary-btn" onClick={sendChatMessage} disabled={!chatInput.trim() || aiLoading}>Send</button></div>
+          <div className="ai-chat-input"><input value={chatInput} onChange={(event) => setChatInput(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') sendChatMessage() }} placeholder="Ask a study-abroad question..." /><button type="button" className="primary-btn" onClick={sendChatMessage} disabled={!chatInput.trim() || aiLoading}>{aiLoading && <LoadingSpinner label="Sending message" />}Send</button></div>
         </section>
       </main>
     </div>
@@ -1218,9 +1247,9 @@ function Dashboard() {
             </p>
 
             <div className="cta-row">
-              <button type="button" className="primary-btn large">
+              <Link to="/universities" className="primary-btn large">
                 Explore destinations
-              </button>
+              </Link>
             </div>
           </div>
         </section>
@@ -1234,9 +1263,9 @@ function Dashboard() {
           </div>
           <div className="destination-grid">
             {destinations.map((destination) => (
-              <a
+              <Link
                 key={destination.country}
-                href="#opportunities"
+                to="/universities"
                 className={`destination-card ${destination.tone}`}
                 style={{
                   backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, 0.05) 20%, rgba(2, 8, 23, 0.92) 100%), url(${destination.image})`,
@@ -1253,7 +1282,7 @@ function Dashboard() {
                     <span className="destination-link">Discover →</span>
                   </div>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </section>
@@ -1263,7 +1292,7 @@ function Dashboard() {
             <span className="study-tool-icon" aria-hidden="true">🎓</span>
             <h3>Can’t decide where to study?</h3>
             <p>Ask AI to get personalised content and course recommendations</p>
-            <a className="study-tool-button" href="#ai">Let our system guide you</a>
+            <Link className="study-tool-button" to="/ai#recommendations">Let our system guide you</Link>
           </div>
           <div className="study-tool-card">
             <span className="study-tool-icon" aria-hidden="true">▣</span>
@@ -1273,7 +1302,7 @@ function Dashboard() {
               cost of living comparison for various country and accommodation
               options with AI assistance
             </p>
-            <a className="study-tool-button" href="#ai">Calculate now</a>
+            <Link className="study-tool-button" to="/ai#budget">Calculate now</Link>
           </div>
         </section>
         </main>
@@ -1401,19 +1430,7 @@ function App() {
               },
             }}
           />
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-            <Route path="/universities" element={<UniversitiesPage />} />
-            <Route path="/scholarships" element={<ScholarshipsPage />} />
-            <Route path="/professors" element={<ProfessorsPage />} />
-            <Route path="/tracker" element={<Dashboard />} />
-            <Route path="/ai" element={<ProtectedRoute><AIToolsPage /></ProtectedRoute>} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="*" element={<Dashboard />} />
-          </Routes>
+          <PageTransition />
         </BrowserRouter>
       </AuthContext.Provider>
     </ThemeContext.Provider>
