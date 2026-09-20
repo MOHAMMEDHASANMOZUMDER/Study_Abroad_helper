@@ -8,11 +8,12 @@ export default async function handler(request: Request, response: Response) {
     databaseReady ??= initializeDatabase()
     await databaseReady
 
-    const queryPath = request.query.path
+    const queryPath = request.query?.path
     const requestedPath = Array.isArray(queryPath) ? queryPath.join('/') : typeof queryPath === 'string' ? queryPath : ''
-    const originalPath = request.path.replace(/^\/api\/index\/?/, '').replace(/^\/+/, '')
+    const requestUrl = typeof request.url === 'string' ? request.url : '/'
+    const originalPath = requestUrl.split('?')[0].replace(/^\/api\/index\/?/, '').replace(/^\/+/, '')
     const apiPath = requestedPath || originalPath
-    request.url = `/api/${apiPath}`
+    request.url = `/api/${apiPath.replace(/^\/+/, '')}`
     return app(request, response)
   } catch (error) {
     databaseReady = undefined
