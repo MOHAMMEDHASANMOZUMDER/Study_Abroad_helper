@@ -542,6 +542,7 @@ function ScholarshipsPage() {
   const { user } = useAuth()
   const [scholarships, setScholarships] = useState<Scholarship[]>([])
   const [savedKeys, setSavedKeys] = useState<Set<string>>(new Set())
+  const [savingKeys, setSavingKeys] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
@@ -568,6 +569,7 @@ function ScholarshipsPage() {
       return
     }
     const key = savedItemKey('scholarship', scholarship)
+    setSavingKeys((current) => new Set(current).add(key))
     try {
       if (savedKeys.has(key)) {
         await savedItemsRequest(`/saved-items/scholarship/${encodeURIComponent(key)}`, { method: 'DELETE' })
@@ -580,6 +582,8 @@ function ScholarshipsPage() {
       }
     } catch (requestError) {
       toast.error(requestError instanceof Error ? requestError.message : 'Unable to update saved scholarship')
+    } finally {
+      setSavingKeys((current) => new Set([...current].filter((value) => value !== key)))
     }
   }
   const countries = useMemo(() => ['All', ...new Set(scholarships.map((item) => item.country).sort())], [scholarships])
@@ -624,7 +628,7 @@ function ScholarshipsPage() {
                   <div className="scholarship-details"><span><strong>{scholarship.funding}</strong> funding</span><span><strong>{scholarship.level}</strong></span><span><strong>{scholarship.deadline}</strong> deadline</span></div>
                   <p className="scholarship-eligibility">{scholarship.eligibility}</p>
                   <div className="scholarship-benefits">{scholarship.benefits.map((benefit) => <span key={benefit}>{benefit}</span>)}</div>
-                  <div className="university-card-actions"><a className="primary-btn small" href={scholarship.url} target="_blank" rel="noreferrer">View official details</a><button type="button" className="secondary-btn small" onClick={() => void toggleSaved(scholarship)}>{savedKeys.has(savedItemKey('scholarship', scholarship)) ? 'Remove saved' : 'Save scholarship'}</button></div>
+                  <div className="university-card-actions"><a className="primary-btn small" href={scholarship.url} target="_blank" rel="noreferrer">View official details</a><button type="button" className={`secondary-btn small saved-item-button ${savedKeys.has(savedItemKey('scholarship', scholarship)) ? 'saved' : ''}`} aria-pressed={savedKeys.has(savedItemKey('scholarship', scholarship))} disabled={savingKeys.has(savedItemKey('scholarship', scholarship))} onClick={() => void toggleSaved(scholarship)}>{savingKeys.has(savedItemKey('scholarship', scholarship)) ? 'Saving...' : savedKeys.has(savedItemKey('scholarship', scholarship)) ? 'Saved ✓' : 'Save scholarship'}</button></div>
                 </article>
               ))}
             </div>
@@ -641,6 +645,7 @@ function ProfessorsPage() {
   const { user } = useAuth()
   const [professorsData, setProfessorsData] = useState<Professor[]>([])
   const [savedKeys, setSavedKeys] = useState<Set<string>>(new Set())
+  const [savingKeys, setSavingKeys] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
@@ -666,6 +671,7 @@ function ProfessorsPage() {
       return
     }
     const key = savedItemKey('professor', professor)
+    setSavingKeys((current) => new Set(current).add(key))
     try {
       if (savedKeys.has(key)) {
         await savedItemsRequest(`/saved-items/professor/${encodeURIComponent(key)}`, { method: 'DELETE' })
@@ -678,6 +684,8 @@ function ProfessorsPage() {
       }
     } catch (requestError) {
       toast.error(requestError instanceof Error ? requestError.message : 'Unable to update saved supervisor')
+    } finally {
+      setSavingKeys((current) => new Set([...current].filter((value) => value !== key)))
     }
   }
   const countries = useMemo(() => ['All', ...new Set(professorsData.map((professor) => professor.country).sort())], [professorsData])
@@ -719,7 +727,7 @@ function ProfessorsPage() {
                   {professor.student.length > 0 && <div className="professor-section"><span>May supervise</span><p>{professor.student.join(' · ')}</p></div>}
                   <div className="university-card-actions">
                     {professor.link ? <a className="primary-btn small" href={professor.link} target="_blank" rel="noreferrer">View profile</a> : <span className="secondary-btn small professor-unavailable">Profile unavailable</span>}
-                    <button type="button" className="secondary-btn small" onClick={() => void toggleSaved(professor)}>{savedKeys.has(savedItemKey('professor', professor)) ? 'Remove saved' : 'Save supervisor'}</button>
+                    <button type="button" className={`secondary-btn small saved-item-button ${savedKeys.has(savedItemKey('professor', professor)) ? 'saved' : ''}`} aria-pressed={savedKeys.has(savedItemKey('professor', professor))} disabled={savingKeys.has(savedItemKey('professor', professor))} onClick={() => void toggleSaved(professor)}>{savingKeys.has(savedItemKey('professor', professor)) ? 'Saving...' : savedKeys.has(savedItemKey('professor', professor)) ? 'Saved ✓' : 'Save supervisor'}</button>
                   </div>
                 </article>
               ))}
@@ -744,6 +752,7 @@ function UniversitiesPage() {
   const [searchMode, setSearchMode] = useState<UniversitySearchMode>('vector')
   const [currentPage, setCurrentPage] = useState(1)
   const [savedKeys, setSavedKeys] = useState<Set<string>>(new Set())
+  const [savingKeys, setSavingKeys] = useState<Set<string>>(new Set())
   const universitiesPerPage = 20
 
   useEffect(() => {
@@ -761,6 +770,7 @@ function UniversitiesPage() {
       return
     }
     const key = savedItemKey('university', university)
+    setSavingKeys((current) => new Set(current).add(key))
     try {
       if (savedKeys.has(key)) {
         await savedItemsRequest(`/saved-items/university/${encodeURIComponent(key)}`, { method: 'DELETE' })
@@ -773,6 +783,8 @@ function UniversitiesPage() {
       }
     } catch (requestError) {
       toast.error(requestError instanceof Error ? requestError.message : 'Unable to update saved university')
+    } finally {
+      setSavingKeys((current) => new Set([...current].filter((value) => value !== key)))
     }
   }
   
@@ -950,7 +962,7 @@ function UniversitiesPage() {
                   </div>
                   <div className="university-card-actions">
                     {university.web_pages[0] && <a className="secondary-btn small" href={university.web_pages[0]} target="_blank" rel="noreferrer">Official website</a>}
-                    <button type="button" className="primary-btn small" onClick={() => void toggleSaved(university)}>{savedKeys.has(savedItemKey('university', university)) ? 'Remove saved' : 'Save university'}</button>
+                    <button type="button" className={`primary-btn small saved-item-button ${savedKeys.has(savedItemKey('university', university)) ? 'saved' : ''}`} aria-pressed={savedKeys.has(savedItemKey('university', university))} disabled={savingKeys.has(savedItemKey('university', university))} onClick={() => void toggleSaved(university)}>{savingKeys.has(savedItemKey('university', university)) ? 'Saving...' : savedKeys.has(savedItemKey('university', university)) ? 'Saved ✓' : 'Save university'}</button>
                   </div>
                 </article>
               ))}

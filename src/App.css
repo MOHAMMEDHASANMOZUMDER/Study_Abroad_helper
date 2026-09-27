@@ -32,6 +32,8 @@
   .theme-toggle { @apply rounded-full border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600 transition hover:border-rose-300 hover:text-rose-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200; }
   .primary-btn { @apply rounded-xl bg-rose-600 px-4 py-3 font-bold text-white shadow-lg shadow-rose-600/20 transition hover:-translate-y-0.5 hover:bg-rose-700; }
   .secondary-btn { @apply rounded-xl border border-slate-200 bg-white px-5 py-3 font-bold text-slate-700 transition hover:-translate-y-0.5 hover:border-rose-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100; }
+  .saved-item-button.saved { @apply border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300; }
+  .saved-item-button:disabled { @apply cursor-wait opacity-75; }
   .primary-btn.small, .secondary-btn.small, .ghost-btn { @apply px-3 py-2 text-xs; }
   .primary-btn.large { @apply rounded-full bg-blue-600 px-10 py-4 text-base shadow-lg shadow-blue-900/30 hover:bg-blue-700; }
   .primary-btn:disabled { @apply cursor-wait opacity-75; }
