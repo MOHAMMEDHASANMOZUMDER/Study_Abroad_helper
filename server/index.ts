@@ -8,6 +8,8 @@ import path from 'node:path'
 import crypto from 'node:crypto'
 import jwt from 'jsonwebtoken'
 import { Pool } from 'pg'
+import scholarshipsSeed from './data/scholarships.json' with { type: 'json' }
+import professorsSeed from '../src/data/professors.json' with { type: 'json' }
 
 config({ path: '.env.local' })
 
@@ -45,6 +47,49 @@ const requireAuth = (request: AuthenticatedRequest, response: Response, next: Ne
 }
 
 app.get('/api/health', (_request, response) => response.json({ ok: true }))
+
+app.get('/api/scholarships', async (_request, response) => {
+  const result = await pool.query(
+    'SELECT name, country, funding, match, deadline, benefits, level, eligibility, provider, url FROM scholarships ORDER BY match DESC, name ASC',
+  )
+  return response.json({ scholarships: result.rows })
+})
+
+app.get('/api/professors', async (_request, response) => {
+  const result = await pool.query(
+    'SELECT name, university, country, research, student, link FROM professors ORDER BY country ASC, university ASC, name ASC',
+  )
+  return response.json({ professors: result.rows })
+})
+
+app.get('/api/saved-items', requireAuth, async (request: AuthenticatedRequest, response) => {
+  const result = await pool.query(
+    'SELECT id, item_type, item_key, item, created_at FROM saved_items WHERE user_id = $1 ORDER BY created_at DESC',
+    [request.user?.id],
+  )
+  return response.json({ items: result.rows })
+})
+
+app.post('/api/saved-items', requireAuth, async (request: AuthenticatedRequest, response) => {
+  const { itemType, itemKey, item } = request.body as { itemType?: string; itemKey?: string; item?: unknown }
+  if (!['scholarship', 'university', 'professor'].includes(itemType ?? '') || !itemKey || !item || typeof item !== 'object') {
+    return response.status(400).json({ message: 'A valid saved item is required' })
+  }
+  const result = await pool.query(
+    `INSERT INTO saved_items (user_id, item_type, item_key, item)
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (user_id, item_type, item_key) DO UPDATE SET item = EXCLUDED.item
+     RETURNING id, item_type, item_key, item, created_at`,
+    [request.user?.id, itemType, itemKey, item],
+  )
+  return response.status(201).json({ item: result.rows[0] })
+})
+
+app.delete('/api/saved-items/:itemType/:itemKey', requireAuth, async (request: AuthenticatedRequest, response: Response) => {
+  const { itemType, itemKey } = request.params
+  await pool.query('DELETE FROM saved_items WHERE user_id = $1 AND item_type = $2 AND item_key = $3', [request.user?.id, itemType, itemKey])
+  return response.status(204).send()
+})
 
 app.get('/api/auth/google', (_request, response) => {
   if (!googleClientId || !googleClientSecret) return response.status(503).json({ message: 'Google sign-in is not configured' })
@@ -237,6 +282,25 @@ CREATE TABLE IF NOT EXISTS users (
 );
 ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;`
   await pool.query(schema)
+  for (const scholarship of scholarshipsSeed) {
+    await pool.query(
+      `INSERT INTO scholarships (name, country, funding, match, deadline, benefits, level, eligibility, provider, url)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       ON CONFLICT (name) DO UPDATE SET country = EXCLUDED.country, funding = EXCLUDED.funding, match = EXCLUDED.match,
+         deadline = EXCLUDED.deadline, benefits = EXCLUDED.benefits, level = EXCLUDED.level,
+         eligibility = EXCLUDED.eligibility, provider = EXCLUDED.provider, url = EXCLUDED.url`,
+      [scholarship.name, scholarship.country, scholarship.funding, scholarship.match, scholarship.deadline, scholarship.benefits, scholarship.level, scholarship.eligibility, scholarship.provider, scholarship.url],
+    )
+  }
+  for (const professor of professorsSeed) {
+    await pool.query(
+      `INSERT INTO professors (name, university, country, research, student, link)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (name, university) DO UPDATE SET country = EXCLUDED.country, research = EXCLUDED.research,
+         student = EXCLUDED.student, link = EXCLUDED.link`,
+      [professor.name, professor.university, professor.country, professor.research, professor.student, professor.link],
+    )
+  }
 }
 
 const startServer = async () => {

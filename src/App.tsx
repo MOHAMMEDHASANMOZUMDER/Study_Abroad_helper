@@ -4,7 +4,6 @@ import toast, { Toaster } from 'react-hot-toast'
 import './App.css'
 import img from "./assets/logo.png"
 import fallbackUniversities from './data/universities-fallback.json'
-import professorsData from './data/professors.json'
 type University = {
   name: string
   country: string
@@ -95,6 +94,14 @@ type Professor = {
   link: string
 }
 
+type SavedItem = {
+  id: string
+  item_type: 'scholarship' | 'university' | 'professor'
+  item_key: string
+  item: Scholarship | University | Professor
+  created_at: string
+}
+
 type Application = {
   name: string
   program: string
@@ -102,96 +109,6 @@ type Application = {
   progress: number
   deadline: string
 }
-
-const _scholarships: Scholarship[] = [
-  {
-    name: 'DAAD Scholarship',
-    country: 'Germany',
-    funding: 'Fully Funded',
-    match: 91,
-    deadline: '15 Oct',
-    benefits: ['Tuition support', 'Monthly stipend', 'Travel allowance'],
-    level: 'Master’s / PhD',
-    eligibility: 'Bangladeshi graduates applying to eligible German programmes',
-    provider: 'DAAD',
-    url: 'https://www.daad.de/en/',
-  },
-  {
-    name: 'Ontario Graduate Scholarship',
-    country: 'Canada',
-    funding: 'Partial Funding',
-    match: 84,
-    deadline: '01 Nov',
-    benefits: ['Tuition waiver', 'Research support', 'Living grant'],
-    level: 'Master’s',
-    eligibility: 'International students with strong academic and research records',
-    provider: 'Ontario universities',
-    url: 'https://grad.uwo.ca/admissions/financing/ogs.html',
-  },
-  {
-    name: 'Fulbright Foreign Student Program',
-    country: 'USA',
-    funding: 'Fully Funded',
-    match: 77,
-    deadline: '18 Sep',
-    benefits: ['Tuition', 'Health insurance', 'Monthly stipend'],
-    level: 'Master’s / PhD',
-    eligibility: 'Bangladeshi citizens pursuing graduate study in the United States',
-    provider: 'U.S. Department of State',
-    url: 'https://foreign.fulbrightonline.org/',
-  },
-]
-
-const BANGLADESHI_SCHOLARSHIPS: Scholarship[] = [
-  ..._scholarships,
-  { name: 'Chevening Scholarships', country: 'United Kingdom', funding: 'Fully Funded', match: 95, deadline: '5 Nov', benefits: ['Full tuition', 'Monthly stipend', 'Travel costs'], level: 'Master’s', eligibility: 'Bangladeshi citizens with leadership and work experience', provider: 'UK Foreign, Commonwealth & Development Office', url: 'https://www.chevening.org/scholarships/' },
-  { name: 'Commonwealth Master’s Scholarships', country: 'United Kingdom', funding: 'Fully Funded', match: 92, deadline: 'Varies by nomination', benefits: ['Tuition fees', 'Living allowance', 'Airfare'], level: 'Master’s', eligibility: 'Citizens of eligible Commonwealth countries including Bangladesh', provider: 'Commonwealth Scholarship Commission', url: 'https://cscuk.fcdo.gov.uk/scholarships/commonwealth-masters-scholarships/' },
-  { name: 'Erasmus Mundus Joint Masters', country: 'Europe', funding: 'Fully Funded', match: 94, deadline: 'Oct–Jan', benefits: ['Participation costs', 'Monthly scholarship', 'Travel allowance'], level: 'Master’s', eligibility: 'Students worldwide applying to participating joint programmes', provider: 'European Commission', url: 'https://erasmus-plus.ec.europa.eu/scholarships' },
-  { name: 'Australia Awards Scholarships', country: 'Australia', funding: 'Fully Funded', match: 90, deadline: '30 Apr', benefits: ['Full tuition', 'Living expenses', 'Health cover'], level: 'Master’s', eligibility: 'Bangladeshi professionals meeting country and programme criteria', provider: 'Australian Government', url: 'https://www.australiaawards.gov.au/' },
-  { name: 'Canada Vanier Graduate Scholarships', country: 'Canada', funding: 'Fully Funded', match: 88, deadline: 'Institution-specific', benefits: ['CAD 50,000 per year', 'Three years of support'], level: 'PhD', eligibility: 'International doctoral candidates nominated by a Canadian institution', provider: 'Government of Canada', url: 'https://vanier.gc.ca/en/home-accueil.html' },
-  { name: 'McCall MacBain Scholarships', country: 'Canada', funding: 'Fully Funded', match: 86, deadline: 'Aug–Sep', benefits: ['Tuition and fees', 'Monthly stipend', 'Mentorship'], level: 'Master’s', eligibility: 'Future graduate leaders applying to eligible McGill programmes', provider: 'McGill University', url: 'https://mccallmacbainscholars.org/' },
-  { name: 'Gates Cambridge Scholarship', country: 'United Kingdom', funding: 'Fully Funded', match: 89, deadline: 'Oct–Dec', benefits: ['University composition fee', 'Maintenance allowance', 'Additional funding'], level: 'Postgraduate', eligibility: 'Outstanding applicants to eligible University of Cambridge courses', provider: 'Gates Cambridge Trust', url: 'https://www.gatescambridge.org/' },
-  { name: 'University of Oxford Clarendon Fund', country: 'United Kingdom', funding: 'Fully Funded', match: 87, deadline: 'Course-specific', benefits: ['Full tuition', 'Annual living grant'], level: 'Graduate', eligibility: 'Applicants to eligible Oxford graduate programmes', provider: 'University of Oxford', url: 'https://www.ox.ac.uk/clarendon' },
-  { name: 'MEXT Scholarship', country: 'Japan', funding: 'Fully Funded', match: 85, deadline: 'Embassy-specific', benefits: ['Tuition waiver', 'Monthly allowance', 'Airfare'], level: 'Bachelor’s / Master’s / PhD', eligibility: 'Bangladeshi applicants applying through embassy or university routes', provider: 'Japanese Government', url: 'https://www.studyinjapan.go.jp/en/planning/scholarships/mext-scholarships/' },
-  { name: 'Türkiye Scholarships', country: 'Türkiye', funding: 'Fully Funded', match: 84, deadline: '10 Jan–20 Feb', benefits: ['Tuition', 'Accommodation', 'Monthly stipend'], level: 'Bachelor’s / Master’s / PhD', eligibility: 'International students meeting academic and age requirements', provider: 'Government of Türkiye', url: 'https://www.turkiyeburslari.gov.tr/' },
-  { name: 'Stipendium Hungaricum', country: 'Hungary', funding: 'Fully Funded', match: 82, deadline: '15 Jan', benefits: ['Tuition-free education', 'Monthly stipend', 'Accommodation contribution'], level: 'Bachelor’s / Master’s / PhD', eligibility: 'Students nominated by their sending partner country', provider: 'Hungarian Government', url: 'https://stipendiumhungaricum.hu/' },
-  { name: 'Swiss Government Excellence Scholarships', country: 'Switzerland', funding: 'Fully Funded', match: 80, deadline: 'Varies by country', benefits: ['Monthly stipend', 'Tuition support', 'Health insurance'], level: 'Research / PhD', eligibility: 'Highly qualified postgraduate researchers and artists', provider: 'Swiss Confederation', url: 'https://www.sbfi.admin.ch/sbfi/en/home/education/scholarships-and-grants/swiss-government-excellence-scholarships.html' },
-]
-
-const _professors: Professor[] = [
-  { name: 'Peng Gao', university: 'Virginia Tech', country: 'USA', research: ['Systems Security', 'Network Security', '(Agentic) AI for Security', 'AI and Agent Security and Safety'], student: ['postdocs', 'Ph.D. students', 'MS students', 'interns'], link: 'https://people.cs.vt.edu/penggao/' },
-  { name: 'Nitesh Saxena', university: 'Texas A&M University', country: 'USA', research: ['Cybersecurity', 'Authentication', 'Privacy'], student: ['post-doc'], link: 'https://nsaxena.engr.tamu.edu/' },
-  { name: 'Ram Krishnan', university: 'University of Texas at San Antonio', country: 'USA', research: ['Computer Security'], student: ['PhD degree'], link: 'https://ceid.utsa.edu/rkrishnan/prospective-students/' },
-  { name: 'Jun Dai', university: 'Worcester Polytechnic Institute', country: 'USA', research: ['LLM Security', 'AI', 'Networked and Distributed Systems'], student: ['Undergraduates', "Master's", 'PhD'], link: 'https://www.wpi.edu/people/faculty/jdai' },
-  { name: 'Hasan Shahriar', university: 'University of Arkansas', country: 'USA', research: ['Secure Software', 'AI', 'Cybersecurity'], student: [], link: '' },
-  { name: 'Hemanta K. Maji', university: 'Purdue University', country: 'USA', research: ['Cryptography'], student: [], link: 'https://www.cs.purdue.edu/homes/hmaji/' },
-  { name: 'Pedro Fonseca', university: 'Purdue University', country: 'USA', research: ['Information Security and Assurance', 'Networking and Operating Systems', 'Distributed Systems'], student: ['PhD students'], link: 'https://www.cs.purdue.edu/homes/pfonseca/' },
-  { name: 'Hanshen Xiao', university: 'Purdue University', country: 'USA', research: ['AI', 'ML', 'NLP'], student: ['PhD Students'], link: 'https://hanshen-xiao.github.io/' },
-  { name: 'Z. Berkay Celik', university: 'Purdue University', country: 'USA', research: ['AI', 'ML', 'NLP'], student: ['PhD students', 'research interns'], link: 'https://beerkay.github.io/' },
-  { name: 'Adam Bates', university: 'University of Illinois Urbana–Champaign', country: 'USA', research: ['Digital Security & Privacy', 'Systems', 'Networks', 'Measurement', 'Human Factors'], student: ['PhD', "Master's"], link: 'https://adambates.org/about/' },
-  { name: 'Kazem Taram', university: 'Purdue University', country: 'USA', research: ['Computer Architecture', 'Computer Security'], student: ['Graduate students'], link: 'https://mktrm.github.io/' },
-  { name: 'Antonio Bianchi', university: 'Purdue University', country: 'USA', research: ['Software and Systems Security'], student: ['Interns', 'PhD students', 'Postdocs'], link: 'https://antoniobianchi.me/' },
-  { name: 'Wenke Lee', university: 'Georgia Institute of Technology', country: 'USA', research: ['Systems', 'Network Security'], student: [], link: '' },
-  { name: 'Dawn Song', university: 'University of California, Berkeley', country: 'USA', research: ['AI Security', 'Privacy', 'Blockchain'], student: [], link: '' },
-  { name: 'Engin Kirda', university: 'Northeastern University', country: 'USA', research: ['Systems', 'Software and Network Security'], student: ['PhD'], link: 'https://www.khoury.northeastern.edu/home/ek/' },
-  { name: 'Trent Jaeger', university: 'Pennsylvania State University', country: 'USA', research: ['Operating Systems Security'], student: [], link: '' },
-  { name: 'Somesh Jha', university: 'University of Wisconsin–Madison', country: 'USA', research: ['AI Security', 'Malware Detection'], student: [], link: '' },
-  { name: 'Patrick McDaniel', university: 'Pennsylvania State University', country: 'USA', research: ['Mobile Security', 'Network Security'], student: [], link: '' },
-  { name: 'XiaoFeng Wang', university: 'Indiana University Bloomington', country: 'USA', research: ['Privacy', 'Applied Cryptography'], student: [], link: '' },
-  { name: 'Shiqing Ma', university: 'Rutgers University', country: 'USA', research: ['AI Security', 'Software Security'], student: [], link: '' },
-  { name: 'Nalin Asanka Gamagedara Arachchilage', university: 'RMIT University', country: 'Australia', research: ['Human-Centred Cybersecurity'], student: ["Master's Research", 'PhD student'], link: 'https://www.rmit.edu.au/profiles/g/nalin-arachchilage' },
-  { name: 'Siamak Layeghy', university: 'University of Queensland', country: 'Australia', research: ['AI', 'Machine Learning', 'Cybersecurity'], student: [], link: 'https://about.uq.edu.au/experts/24474' },
-  { name: 'Dan Kim', university: 'University of Queensland', country: 'Australia', research: ['Cybersecurity', 'AI'], student: [], link: 'https://about.uq.edu.au/experts/23703' },
-  { name: 'Dr Jonathan Davies', university: 'University of Queensland', country: 'Australia', research: ['ML'], student: [], link: 'https://about.uq.edu.au/experts/45717' },
-  { name: 'Chris Roelfsema', university: 'University of Queensland', country: 'Australia', research: ['ML'], student: [], link: 'https://about.uq.edu.au/experts/765' },
-  { name: 'Ron Steinfeld', university: 'Monash University', country: 'Australia', research: ['Cryptography', 'Cybersecurity'], student: [], link: '' },
-  { name: 'Mahmoud Elkhodr', university: 'CQUniversity', country: 'Australia', research: ['IoT Security', 'AI', 'Blockchain'], student: [], link: '' },
-  { name: 'Mark Sanderson', university: 'RMIT University', country: 'Australia', research: ['AI', 'Information Retrieval', 'NLP'], student: [], link: '' },
-  { name: 'Toby Murray', university: 'University of Melbourne', country: 'Australia', research: ['Software Security', 'Formal Methods'], student: [], link: '' },
-  { name: 'Hoa Khanh Dam', university: 'University of Wollongong', country: 'Australia', research: ['AI', 'Software Engineering'], student: [], link: '' },
-  { name: 'Miao Xu', university: 'University of Queensland', country: 'Australia', research: ['Machine Learning', 'Data Mining'], student: [], link: '' },
-  { name: 'Suranga Seneviratne', university: 'University of Sydney', country: 'Australia', research: ['Mobile Security', 'Privacy', 'AI'], student: [], link: '' },
-]
 
 const _applications: Application[] = [
   {
@@ -300,8 +217,6 @@ const _conversation = [
   { sender: 'AI', text: 'Based on your saved program, prepare transcript, CV, SOP, IELTS, recommendation letters, and proof of funds. Verify all details on the official university website.' },
 ]
 
-void _scholarships
-void _professors
 void _applications
 void _checklist
 void _adminData
@@ -466,6 +381,29 @@ async function authRequest(path: string, options?: RequestInit) {
   return payload
 }
 
+async function directoryRequest<T>(path: string) {
+  const response = await fetch(`${apiBaseUrl}/api${path}`)
+  const rawPayload = await response.text()
+  let payload: T & { message?: string }
+  try { payload = JSON.parse(rawPayload) as T & { message?: string } } catch { throw new Error(`API returned an invalid response (${response.status})`) }
+  if (!response.ok) throw new Error(payload.message ?? 'Unable to load directory data')
+  return payload
+}
+
+async function savedItemsRequest<T>(path: string, options?: RequestInit) {
+  return authRequest(path, options) as Promise<T>
+}
+
+function savedItemKey(type: SavedItem['item_type'], item: Scholarship | University | Professor) {
+  if (type === 'scholarship') return (item as Scholarship).name
+  if (type === 'professor') {
+    const professor = item as Professor
+    return `${professor.name}:${professor.university}`
+  }
+  const university = item as University
+  return `${university.name}:${university.country}`
+}
+
 async function aiRequest<T>(path: string, body: unknown) {
   const response = await fetch(`${apiBaseUrl}/api/ai${path}`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
   const rawPayload = await response.text()
@@ -601,20 +539,60 @@ function RegisterPage() {
 
 function ScholarshipsPage() {
   const { theme } = useTheme()
+  const { user } = useAuth()
+  const [scholarships, setScholarships] = useState<Scholarship[]>([])
+  const [savedKeys, setSavedKeys] = useState<Set<string>>(new Set())
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [query, setQuery] = useState('')
   const [country, setCountry] = useState('All')
   const [level, setLevel] = useState('All')
-  const countries = useMemo(() => ['All', ...new Set(BANGLADESHI_SCHOLARSHIPS.map((item) => item.country).sort())], [])
-  const levels = useMemo(() => ['All', ...new Set(BANGLADESHI_SCHOLARSHIPS.flatMap((item) => item.level.split(' / ')).sort())], [])
-  const scholarships = useMemo(() => {
+  useEffect(() => {
+    directoryRequest<{ scholarships: Scholarship[] }>('/scholarships')
+      .then((payload) => setScholarships(payload.scholarships))
+      .catch((requestError) => setError(requestError instanceof Error ? requestError.message : 'Unable to load scholarships'))
+      .finally(() => setLoading(false))
+  }, [])
+  useEffect(() => {
+    if (!user) {
+      setSavedKeys(new Set())
+      return
+    }
+    void savedItemsRequest<{ items: SavedItem[] }>('/saved-items').then((payload) => {
+      setSavedKeys(new Set(payload.items.filter((item) => item.item_type === 'scholarship').map((item) => item.item_key)))
+    }).catch(() => undefined)
+  }, [user])
+  const toggleSaved = async (scholarship: Scholarship) => {
+    if (!user) {
+      toast.error('Log in to save scholarships to your dashboard.')
+      return
+    }
+    const key = savedItemKey('scholarship', scholarship)
+    try {
+      if (savedKeys.has(key)) {
+        await savedItemsRequest(`/saved-items/scholarship/${encodeURIComponent(key)}`, { method: 'DELETE' })
+        setSavedKeys((current) => new Set([...current].filter((value) => value !== key)))
+        toast.success('Scholarship removed from your dashboard.')
+      } else {
+        await savedItemsRequest('/saved-items', { method: 'POST', body: JSON.stringify({ itemType: 'scholarship', itemKey: key, item: scholarship }) })
+        setSavedKeys((current) => new Set(current).add(key))
+        toast.success('Scholarship saved to your dashboard.')
+      }
+    } catch (requestError) {
+      toast.error(requestError instanceof Error ? requestError.message : 'Unable to update saved scholarship')
+    }
+  }
+  const countries = useMemo(() => ['All', ...new Set(scholarships.map((item) => item.country).sort())], [scholarships])
+  const levels = useMemo(() => ['All', ...new Set(scholarships.flatMap((item) => item.level.split(' / ')).sort())], [scholarships])
+  const filteredScholarships = useMemo(() => {
     const term = query.trim().toLowerCase()
-    return BANGLADESHI_SCHOLARSHIPS.filter((item) => {
+    return scholarships.filter((item) => {
       const searchable = [item.name, item.country, item.funding, item.level, item.provider, item.eligibility, ...item.benefits].join(' ').toLowerCase()
       return searchable.includes(term)
         && (country === 'All' || item.country === country)
         && (level === 'All' || item.level.includes(level))
     })
-  }, [country, level, query])
+  }, [country, level, query, scholarships])
 
   return (
     <div className={`app-shell ${theme}-theme`}>
@@ -627,7 +605,7 @@ function ScholarshipsPage() {
             <h1>Find scholarships for your study abroad journey</h1>
             <p>Explore major funding opportunities open to Bangladeshi students. Always verify current deadlines and eligibility on the official provider website.</p>
           </div>
-          <div className="university-hero-stat"><strong>{BANGLADESHI_SCHOLARSHIPS.length}</strong><span>featured opportunities</span></div>
+          <div className="university-hero-stat"><strong>{scholarships.length}</strong><span>featured opportunities</span></div>
         </section>
         <section id="scholarships" className="university-content">
           <div className="university-toolbar scholarship-toolbar">
@@ -635,10 +613,10 @@ function ScholarshipsPage() {
             <label className="university-filter"><span>Destination</span><select value={country} onChange={(event) => setCountry(event.target.value)}>{countries.map((item) => <option key={item}>{item}</option>)}</select></label>
             <label className="university-filter"><span>Study level</span><select value={level} onChange={(event) => setLevel(event.target.value)}>{levels.map((item) => <option key={item}>{item}</option>)}</select></label>
           </div>
-          <div className="university-results-heading"><div><p className="eyebrow">Your funding shortlist</p><h2>{scholarships.length} opportunities found</h2></div><span>For Bangladeshi applicants · verify details before applying</span></div>
-          {scholarships.length > 0 ? (
+          <div className="university-results-heading"><div><p className="eyebrow">Your funding shortlist</p><h2>{filteredScholarships.length} opportunities found</h2></div><span>For Bangladeshi applicants · verify details before applying</span></div>
+          {loading ? <div className="university-loading"><LoadingSpinner label="Loading scholarships" /><h2>Loading scholarships...</h2></div> : error ? <div className="university-empty"><h2>Could not load scholarships</h2><p>{error}</p></div> : filteredScholarships.length > 0 ? (
             <div className="scholarship-results-grid">
-              {scholarships.map((scholarship) => (
+              {filteredScholarships.map((scholarship) => (
                 <article className="scholarship-card" key={scholarship.name}>
                   <div className="university-card-top"><span className="country-tag">{scholarship.country}</span><span className="match-badge">{scholarship.match}% match</span></div>
                   <h2>{scholarship.name}</h2>
@@ -646,7 +624,7 @@ function ScholarshipsPage() {
                   <div className="scholarship-details"><span><strong>{scholarship.funding}</strong> funding</span><span><strong>{scholarship.level}</strong></span><span><strong>{scholarship.deadline}</strong> deadline</span></div>
                   <p className="scholarship-eligibility">{scholarship.eligibility}</p>
                   <div className="scholarship-benefits">{scholarship.benefits.map((benefit) => <span key={benefit}>{benefit}</span>)}</div>
-                  <div className="university-card-actions"><a className="primary-btn small" href={scholarship.url} target="_blank" rel="noreferrer">View official details</a><button type="button" className="secondary-btn small">Save scholarship</button></div>
+                  <div className="university-card-actions"><a className="primary-btn small" href={scholarship.url} target="_blank" rel="noreferrer">View official details</a><button type="button" className="secondary-btn small" onClick={() => void toggleSaved(scholarship)}>{savedKeys.has(savedItemKey('scholarship', scholarship)) ? 'Remove saved' : 'Save scholarship'}</button></div>
                 </article>
               ))}
             </div>
@@ -660,16 +638,56 @@ function ScholarshipsPage() {
 
 function ProfessorsPage() {
   const { theme } = useTheme()
+  const { user } = useAuth()
+  const [professorsData, setProfessorsData] = useState<Professor[]>([])
+  const [savedKeys, setSavedKeys] = useState<Set<string>>(new Set())
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [query, setQuery] = useState('')
   const [country, setCountry] = useState('All')
-  const countries = useMemo(() => ['All', ...new Set(professorsData.map((professor) => professor.country).sort())], [])
+  useEffect(() => {
+    directoryRequest<{ professors: Professor[] }>('/professors')
+      .then((payload) => setProfessorsData(payload.professors))
+      .catch((requestError) => setError(requestError instanceof Error ? requestError.message : 'Unable to load supervisors'))
+      .finally(() => setLoading(false))
+  }, [])
+  useEffect(() => {
+    if (!user) {
+      setSavedKeys(new Set())
+      return
+    }
+    void savedItemsRequest<{ items: SavedItem[] }>('/saved-items').then((payload) => {
+      setSavedKeys(new Set(payload.items.filter((item) => item.item_type === 'professor').map((item) => item.item_key)))
+    }).catch(() => undefined)
+  }, [user])
+  const toggleSaved = async (professor: Professor) => {
+    if (!user) {
+      toast.error('Log in to save supervisors to your dashboard.')
+      return
+    }
+    const key = savedItemKey('professor', professor)
+    try {
+      if (savedKeys.has(key)) {
+        await savedItemsRequest(`/saved-items/professor/${encodeURIComponent(key)}`, { method: 'DELETE' })
+        setSavedKeys((current) => new Set([...current].filter((value) => value !== key)))
+        toast.success('Supervisor removed from your dashboard.')
+      } else {
+        await savedItemsRequest('/saved-items', { method: 'POST', body: JSON.stringify({ itemType: 'professor', itemKey: key, item: professor }) })
+        setSavedKeys((current) => new Set(current).add(key))
+        toast.success('Supervisor saved to your dashboard.')
+      }
+    } catch (requestError) {
+      toast.error(requestError instanceof Error ? requestError.message : 'Unable to update saved supervisor')
+    }
+  }
+  const countries = useMemo(() => ['All', ...new Set(professorsData.map((professor) => professor.country).sort())], [professorsData])
   const professors = useMemo(() => {
     const term = query.trim().toLowerCase()
     return professorsData.filter((professor) => {
       const searchable = [professor.name, professor.university, professor.country, ...professor.research, ...professor.student].join(' ').toLowerCase()
       return searchable.includes(term) && (country === 'All' || professor.country === country)
     })
-  }, [country, query])
+  }, [country, query, professorsData])
 
   return (
     <div className={`app-shell ${theme}-theme`}>
@@ -690,7 +708,7 @@ function ProfessorsPage() {
             <label className="university-filter"><span>Country</span><select value={country} onChange={(event) => setCountry(event.target.value)}>{countries.map((item) => <option key={item}>{item}</option>)}</select></label>
           </div>
           <div className="university-results-heading"><div><p className="eyebrow">Research connections</p><h2>{professors.length} matching supervisors</h2></div><span>Source: supervisor_list - Sheet1.pdf</span></div>
-          {professors.length > 0 ? (
+          {loading ? <div className="university-loading"><LoadingSpinner label="Loading supervisors" /><h2>Loading supervisors...</h2></div> : error ? <div className="university-empty"><h2>Could not load supervisors</h2><p>{error}</p></div> : professors.length > 0 ? (
             <div className="professor-results-grid">
               {professors.map((professor) => (
                 <article className="professor-card" key={`${professor.name}-${professor.university}`}>
@@ -701,7 +719,7 @@ function ProfessorsPage() {
                   {professor.student.length > 0 && <div className="professor-section"><span>May supervise</span><p>{professor.student.join(' · ')}</p></div>}
                   <div className="university-card-actions">
                     {professor.link ? <a className="primary-btn small" href={professor.link} target="_blank" rel="noreferrer">View profile</a> : <span className="secondary-btn small professor-unavailable">Profile unavailable</span>}
-                    <button type="button" className="secondary-btn small">Save supervisor</button>
+                    <button type="button" className="secondary-btn small" onClick={() => void toggleSaved(professor)}>{savedKeys.has(savedItemKey('professor', professor)) ? 'Remove saved' : 'Save supervisor'}</button>
                   </div>
                 </article>
               ))}
@@ -715,6 +733,7 @@ function ProfessorsPage() {
 
 function UniversitiesPage() {
   const { theme } = useTheme()
+  const { user } = useAuth()
   const [universities, setUniversities] = useState<University[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -724,7 +743,38 @@ function UniversitiesPage() {
   const [country, setCountry] = useState('All')
   const [searchMode, setSearchMode] = useState<UniversitySearchMode>('vector')
   const [currentPage, setCurrentPage] = useState(1)
+  const [savedKeys, setSavedKeys] = useState<Set<string>>(new Set())
   const universitiesPerPage = 20
+
+  useEffect(() => {
+    if (!user) {
+      setSavedKeys(new Set())
+      return
+    }
+    void savedItemsRequest<{ items: SavedItem[] }>('/saved-items').then((payload) => {
+      setSavedKeys(new Set(payload.items.filter((item) => item.item_type === 'university').map((item) => item.item_key)))
+    }).catch(() => undefined)
+  }, [user])
+  const toggleSaved = async (university: University) => {
+    if (!user) {
+      toast.error('Log in to save universities to your dashboard.')
+      return
+    }
+    const key = savedItemKey('university', university)
+    try {
+      if (savedKeys.has(key)) {
+        await savedItemsRequest(`/saved-items/university/${encodeURIComponent(key)}`, { method: 'DELETE' })
+        setSavedKeys((current) => new Set([...current].filter((value) => value !== key)))
+        toast.success('University removed from your dashboard.')
+      } else {
+        await savedItemsRequest('/saved-items', { method: 'POST', body: JSON.stringify({ itemType: 'university', itemKey: key, item: university }) })
+        setSavedKeys((current) => new Set(current).add(key))
+        toast.success('University saved to your dashboard.')
+      }
+    } catch (requestError) {
+      toast.error(requestError instanceof Error ? requestError.message : 'Unable to update saved university')
+    }
+  }
   
   useEffect(() => {
     const loadUniversities = async () => {
@@ -900,7 +950,7 @@ function UniversitiesPage() {
                   </div>
                   <div className="university-card-actions">
                     {university.web_pages[0] && <a className="secondary-btn small" href={university.web_pages[0]} target="_blank" rel="noreferrer">Official website</a>}
-                    <button type="button" className="primary-btn small">Save university</button>
+                    <button type="button" className="primary-btn small" onClick={() => void toggleSaved(university)}>{savedKeys.has(savedItemKey('university', university)) ? 'Remove saved' : 'Save university'}</button>
                   </div>
                 </article>
               ))}
@@ -944,9 +994,17 @@ function UniversitiesPage() {
 function DashboardPage() {
   const { theme } = useTheme()
   const { user } = useAuth()
+  const [savedItems, setSavedItems] = useState<SavedItem[]>([])
+  const [savedLoading, setSavedLoading] = useState(true)
   const firstName = user?.name.split(' ')[0] ?? 'there'
   const countries = user?.target_countries ?? []
   const interests = user?.interests ?? []
+
+  useEffect(() => {
+    void savedItemsRequest<{ items: SavedItem[] }>('/saved-items')
+      .then((payload) => setSavedItems(payload.items))
+      .finally(() => setSavedLoading(false))
+  }, [])
 
   return (
     <div className={`app-shell ${theme}-theme`}>
@@ -999,6 +1057,31 @@ function DashboardPage() {
             <div className="tag-list">{countries.map((country) => <span key={country}>{country}</span>)}{interests.slice(0, 3).map((interest) => <span key={interest}>{interest}</span>)}</div>
             <Link className="secondary-btn small" to="/profile">Edit profile</Link>
           </article>
+        </section>
+        <section className="account-panel">
+          <div className="section-head">
+            <div><p className="eyebrow">Your saved opportunities</p><h2>{savedItems.length} saved items</h2></div>
+          </div>
+          {savedLoading ? <p>Loading your saved items...</p> : savedItems.length === 0 ? (
+            <p>You have not saved anything yet. Save a university, scholarship, or supervisor from the directories.</p>
+          ) : (
+            <div className="dashboard-actions">
+              {savedItems.map((saved) => {
+                const item = saved.item
+                const title = saved.item_type === 'scholarship'
+                  ? (item as Scholarship).name
+                  : saved.item_type === 'professor'
+                    ? (item as Professor).name
+                    : (item as University).name
+                const detail = saved.item_type === 'scholarship'
+                  ? `${(item as Scholarship).provider} · ${(item as Scholarship).country}`
+                  : saved.item_type === 'professor'
+                    ? `${(item as Professor).university} · ${(item as Professor).country}`
+                    : `${(item as University).country} · University`
+                return <div className="dashboard-action" key={saved.id}><span>{saved.item_type === 'scholarship' ? 'S' : saved.item_type === 'professor' ? 'P' : 'U'}</span><div><strong>{title}</strong><p>{detail}</p></div><Link className="secondary-btn small" to={saved.item_type === 'scholarship' ? '/scholarships#scholarships' : saved.item_type === 'professor' ? '/professors#professors' : '/universities'}>Open directory</Link></div>
+              })}
+            </div>
+          )}
         </section>
       </main>
     </div>
