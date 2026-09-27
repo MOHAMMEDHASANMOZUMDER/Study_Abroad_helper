@@ -417,7 +417,7 @@ function AuthLayout({ children, title, subtitle }: { children: ReactNode; title:
   const { theme, toggleTheme } = useTheme()
 
   return (
-    <div className="auth-page">
+    <div className={`auth-page ${theme}-theme`}>
       <header className="auth-header">
         <Link className="auth-brand" to="/">
           <img src={img} alt="CUET logo" />
@@ -428,6 +428,14 @@ function AuthLayout({ children, title, subtitle }: { children: ReactNode; title:
         </button>
       </header>
       <main className="auth-main">
+        <aside className="auth-visual" aria-label="Study abroad inspiration">
+          <div className="auth-visual-copy">
+            <p className="auth-visual-kicker">Your next chapter starts here</p>
+            <h2>Go further<br /><em>with purpose.</em></h2>
+            <p>Find the right destination, funding, and people to turn your study-abroad ambition into a plan.</p>
+          </div>
+          <span className="auth-visual-stamp">CUET / 2025</span>
+        </aside>
         <section className="auth-card">
           <div className="auth-heading">
             <p className="eyebrow">CUET Study Abroad Helper</p>
@@ -502,6 +510,7 @@ function RegisterPage() {
           if (password !== confirmPassword) {
             setError('Passwords do not match.')
             toast.error('Passwords do not match.')
+            setLoading(false)
             return
           }
           await authRequest('/auth/register', { method: 'POST', body: JSON.stringify({ name: form.get('name'), email: form.get('email'), password }) })
@@ -1331,12 +1340,13 @@ function Dashboard() {
       <main>
         <section className="hero-section">
           <div className="hero-copy">
+            <p className="hero-kicker">A clearer route to your next chapter</p>
             <nav className="hero-breadcrumb" aria-label="Breadcrumb">
               <Link to="/">CUET Study Abroad Helper</Link>
               <span>/</span>
               <span>Study abroad</span>
             </nav>
-            <h1>{user ? `Welcome back, ${user.name.split(' ')[0]}` : 'Study abroad destinations'}</h1>
+            <h1>{user ? `Welcome back, ${user.name.split(' ')[0]}` : <>Your world.<br /><em>Your opportunity.</em></>}</h1>
             <p>
               {user?.target_degree ? `Your ${user.target_degree} journey starts here. Explore destinations and opportunities matched to your goals.` : 'Learn more about exciting places where you can study and find the destination that fits your ambitions.'}
             </p>
@@ -1345,8 +1355,24 @@ function Dashboard() {
               <Link to="/universities" className="primary-btn large">
                 Explore destinations
               </Link>
+              <Link to="/scholarships#scholarships" className="hero-text-link">
+                Browse scholarships <span aria-hidden="true">↗</span>
+              </Link>
             </div>
           </div>
+          <aside className="hero-insight-card" aria-label="Study abroad planning summary">
+            <div className="hero-insight-top">
+              <span className="hero-insight-mark">✦</span>
+              <span>CUET EDITION / 2025</span>
+            </div>
+            <p className="hero-insight-label">Plan with purpose</p>
+            <h2>Make your next move count.</h2>
+            <p className="hero-insight-copy">Compare universities, discover funding, and connect with the people who can help you get there.</p>
+            <div className="hero-insight-stats">
+              <span><strong>100+</strong> universities</span>
+              <span><strong>12</strong> destinations</span>
+            </div>
+          </aside>
         </section>
 
         <section className="destination-section">
