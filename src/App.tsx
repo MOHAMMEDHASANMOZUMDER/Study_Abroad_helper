@@ -1346,7 +1346,7 @@ function Dashboard() {
               <span>/</span>
               <span>Study abroad</span>
             </nav>
-            <h1>{user ? `Welcome back, ${user.name.split(' ')[0]}` : <>Your world.<br /><em>Your opportunity.</em></>}</h1>
+            <h1>{user ? `Welcome back, ${user.name.split(' ')[0]}` : <>Your world.<br /><em>Your <br/> opportunity.</em></>}</h1>
             <p>
               {user?.target_degree ? `Your ${user.target_degree} journey starts here. Explore destinations and opportunities matched to your goals.` : 'Learn more about exciting places where you can study and find the destination that fits your ambitions.'}
             </p>
@@ -1363,7 +1363,7 @@ function Dashboard() {
           <aside className="hero-insight-card" aria-label="Study abroad planning summary">
             <div className="hero-insight-top">
               <span className="hero-insight-mark">✦</span>
-              <span>CUET EDITION / 2025</span>
+              <span>CUET EDITION / 2026</span>
             </div>
             <p className="hero-insight-label">Plan with purpose</p>
             <h2>Make your next move count.</h2>
