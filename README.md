@@ -7,6 +7,10 @@ A web-based platform designed to help students explore study-abroad opportunitie
 📂 **GitHub Repository:** [Study_Abroad_helper](https://github.com/MOHAMMEDHASANMOZUMDER/Study_Abroad_helper)
 
 ---
+## 📸 Screenshots
+<img width="1920" height="3502" alt="screencapture-cuetabroadstudy-vercel-app-2026-10-19-22_36_15" src="https://github.com/user-attachments/assets/c65c59bb-4f44-466c-b0ee-8b4247013a55" />
+
+
 
 ## 📖 About the Project
 
