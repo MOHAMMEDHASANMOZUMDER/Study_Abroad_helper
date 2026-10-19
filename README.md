@@ -8,7 +8,13 @@ A web-based platform designed to help students explore study-abroad opportunitie
 
 ---
 ## 📸 Screenshots
-<img width="1920" height="3502" alt="screencapture-cuetabroadstudy-vercel-app-2026-10-19-22_36_15" src="https://github.com/user-attachments/assets/c65c59bb-4f44-466c-b0ee-8b4247013a55" />
+<img width="435" height="348" alt="image" src="https://github.com/user-attachments/assets/b53dc501-6d53-4598-88f7-26538f31faca" />
+<img width="278" height="202" alt="image" src="https://github.com/user-attachments/assets/6d113c49-28d8-4fdf-9b92-607946b496dd" />
+<img width="168" height="117" alt="image" src="https://github.com/user-attachments/assets/4c292deb-289a-45db-87ed-2ee142dde7bc" />
+<img width="1211" height="737" alt="image" src="https://github.com/user-attachments/assets/1b3e5818-4f4b-46c8-b726-4a069198b5f6" />
+<img width="1920" height="1541" alt="image" src="https://github.com/user-attachments/assets/3cac9a35-6f22-4733-b31e-a63fce332a3c" />
+
+
 
 
 
